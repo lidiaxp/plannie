@@ -22,11 +22,11 @@ processadorDoPc = 2800 # MHz
 
 p = Pontos()
 
-Astar = 0
+Astar = 1
 RrtC = 0
 Pso = 0
 PsoRl = 0
-Rl = 1
+Rl = 0
 RRT = 0
 
 nome = ["A-Star", "Rapid Random Tree Connect", "Particle Swarm Optimization", "Particle Swarm Optimization with Reinforcement Learning", "Reinforcement Learning", "Rapid Exploring Random Tree"]
