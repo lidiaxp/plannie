@@ -22,11 +22,11 @@ processadorDoPc = 2800 # MHz
 
 p = Pontos()
 
-Astar = 0
+Astar = 1
 Apf = 0
 Prm = 0
 Rrt = 0
-RrtC = 1
+RrtC = 0
 Aco = False # n esta ajustado para rodar aki
 Pso = 0
 Gwo = 0
