@@ -16,10 +16,10 @@ The project can be installed in any directory on the computer with the following
 ## Features
 
 - Classical, meta heuristic, and machine learning path planning techniques in 2D and 3D;
-- Deep benchmark with path length, time, memory, CPU, battery, fligth time, among others;
 - Integration with Python, Gazebo ([MRS Simulator](https://ctu-mrs.github.io/) and [Sphinx](https://developer.parrot.com/docs/sphinx/whatissphinx.html)), and real environmts
 - Avoid dynamic obstacles;
-- Supports several external maps, as House Expo and Video Game maps;
+- Deep benchmark with path length, time, memory, CPU, battery, fligth time, among others;
+- Supports several external maps, as [House Expo](https://github.com/TeaganLi/HouseExpo) and [Video Game maps](https://www.movingai.com/benchmarks/voxels.html);
 - Supports Hokuyo, RpLidar, Velodyne, GPS, GPS RTK, and several cameras;
 - Travelling salesman problem and coverage path planning algorithms;
 - Decision maker supports modular localization, mapping, controller, and vision scripts;
