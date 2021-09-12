@@ -14,7 +14,7 @@ import os
 alpha = 0.9  # taxa de aprendizado, ie, qual fracao dos valores Q deve ser atualizada
 gamma = 0.9  # fator de desconto, ie, algoritmo considera possíveis recompensas futuras
 epsilon = 0.9  # probabilidade de escolher uma acao aleatória em vez da melhor acao
-maxIt = 400
+maxIt = 1000
 epsilon_decay = 0.999999
 
 p = Pontos()
@@ -123,9 +123,9 @@ def run(show=False, vmx=None, vmy=None, vmz=None, startx=None, starty=None, star
     cpu = psutil.cpu_percent()
     memory = memory_usage()
     p = Pontos()
-    mx = 125#p.limiar[1] + 3
-    my = 30#p.limiar[0] + 3
-    mz = 26
+    mx = 25#p.limiar[1] + 3
+    my = 25#p.limiar[0] + 3
+    mz = 6
 
     # print("1")
     if startx == None:

@@ -72,7 +72,7 @@ def run(show=0, vmx=None, vmy=None, vmz=None, startx=None, starty=None, startz=N
     asa3d = Astar3D()
 
     # pass search space over shape argument, to optimize results
-    path3d = asa3d.generate_path(start_point=start_point, end_point=end_point, grid_map=point_cloud3d, shape=(121, 21, 26))
+    path3d = asa3d.generate_path(start_point=start_point, end_point=end_point, grid_map=point_cloud3d, shape=(25, 25, 6))
     print(path3d)
     print("Time: " + str(time.time() - tempoInicio))
 
