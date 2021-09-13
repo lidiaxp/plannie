@@ -20,6 +20,7 @@ from sensor_msgs.msg import BatteryState
 from datetime import datetime
 import statistics as stc
 from sys import exit
+import psutil
 
 from utilsUAV import *
 
@@ -27,6 +28,9 @@ class globalPlanner:
     def __init__(self):
         # Tags
         self.land, self.takeoff, self.hover, self.sec, self.garraOn, self.esperarCamera, self.garraOff, self.calibrarTarget = 100, 200, 300, 400, 500, 600, 700, 800
+
+        self.memoriaDoPc = 16000 # MB
+        self.processadorDoPc = 2800 # MHz
 
         # Flags
         self.log = 0
@@ -47,10 +51,15 @@ class globalPlanner:
         self.bateria = {"inicial": 0, "final": 0, "uso": 0}
         self.bateriaGazebo = {"inicial": 0, "final": 0, "uso": 0}
         self.variaveisLog = {"tt": []}
+        self.memoria = {"inicial": 0, "final": 0}
+        self.cpu = {"inicial": 0, "final": 0}
 
         # Trajectory
         self.rotas = {}
         self.rotas["x"], self.rotas["y"], self.rotas["z"], self.rotas["yaw"] = [], [], [], []
+        # self.rotas["x"], self.rotas["y"] = rotaToGazebo2(self.rotas["x"], self.rotas["y"])
+        # self.rotas["z"] = [self.altura] * len(self.rotas["x"])
+        # self.rotas["yaw"] = [0] * len(self.rotas["x"])
         self.xWrite, self.yWrite, self.zWrite, self.yawWrite = [], [], [], []
         
         # Values to be Changed by the User
@@ -99,6 +108,8 @@ class globalPlanner:
         print("Espere um momento, ja iremos comecar")
         rospy.sleep(5)
         self.unic["SM"] = 1
+        self.memoria["inicial"] = memory_usage()
+        self.cpu["inicial"] = psutil.cpu_percent()
         set_vio()
 
     # ---------------------------- Loop :3 ----------------------------------
@@ -118,6 +129,7 @@ class globalPlanner:
             self.unic["bateria"] = 4
 
     def callbackBatteryGazebo(self, bat):
+        self.bateriaGazebo["atual"] = bat.data
         if self.unic["bateriaGazebo"] == 0:
             self.bateriaGazebo["inicial"] = bat.data
             self.unic["bateriaGazebo"] = 1
@@ -171,7 +183,6 @@ class globalPlanner:
                 self.rotas["y"][self.pos:] = ry
                 self.rotas["z"][self.pos:] = [self.altura] * len(rx)
                 self.rotas["yaw"][self.pos:] = [0] * len(rx)
-                # print(self.rotas["x"])
                 self.variaveisLog["tt"].append(t)
 
     # ---------------------------- Altura Laser ----------------------------------
@@ -220,32 +231,42 @@ class globalPlanner:
                 # if self.rotas["x"][-1] == 36 and self.rotas["x"][-1] == 32:
                 if abs(self.currentPosX - self.rotas["x"][-1]) < 1 and abs(self.currentPosY - self.rotas["y"][-1]) < 1:
                 # if self.pos == len(self.rotas["x"]):
-                    if self.unic["bateria"]!= 4: self.unic["bateria"] = 2
-                    if self.unic["bateriaGazebo"]!= 4: self.unic["bateriaGazebo"] = 2
+                    if self.unic["bateria"] != 4: self.unic["bateria"] = 2
+                    if self.unic["bateriaGazebo"] != 4: self.unic["bateriaGazebo"] = 2
 
-                    # if self.rotas["x"][-1] != self.land:
-                    #     self.rotas["x"].append(25)
-                    #     self.rotas["y"].append(18)
-                    #     self.rotas["z"].append(self.altura)
-                    #     self.rotas["yaw"].append(self.rotas["yaw"][-1])
-                        # self.pos -= 1
-                        # print(self.rotas["x"])
-                        # print("Ate mais e obrigado pelos peixes")
+                    self.memoria["final"] = memory_usage()
+                    self.cpu["final"] = psutil.cpu_percent()
 
                     print("Uso da bateria:")
                     print(self.bateria)
                     print("Uso da bateria Gazebo:")
                     print(self.bateriaGazebo)
                     print("Comprimento: " + str(distancia_rota(self.rotas["x"], self.rotas["y"])))
-                    print("Media do tempo: " + str(stc.mean(self.variaveisLog["tt"])))
                     try:
+                        print("Media do tempo: " + str(stc.mean(self.variaveisLog["tt"])))
                         print("Variancia do tempo: " + str(stc.variance(self.variaveisLog["tt"])))
                         print("Desvio padrao do tempo: " + str(stc.stdev(self.variaveisLog["tt"])))
+                        print("Maior do tempo: " + str(max(self.variaveisLog["tt"])))
+                        print("Menor do tempo: " + str(min(self.variaveisLog["tt"])))
                     except:
                         pass
-                    print("Maior do tempo: " + str(max(self.variaveisLog["tt"])))
-                    print("Menor do tempo: " + str(min(self.variaveisLog["tt"])))
                     print("Tempo de voo: " + str(time() - self.counts["total"]))
+
+                    print("CPU:")
+                    print(self.cpu)
+                    print("Memoria:")
+                    print(self.memoria)
+
+                    print("CPU Real:")
+                    self.cpu["inicial"] *= self.processadorDoPc / 100
+                    self.cpu["final"] *= self.processadorDoPc / 100
+                    self.cpu["uso"] *= self.cpu["final"] - self.cpu["inicial"]
+                    print(self.cpu)
+                    print("Memoria Real:")
+                    self.memoria["inicial"] *=  self.memoriaDoPc / 100
+                    self.memoria["final"] *=  self.memoriaDoPc / 100
+                    self.memoria["uso"] *=  self.memoria["final"] - self.memoria["inicial"]
+                    print(self.memoria)
 
                     if self.log:
                         self.f.write("Uso da bateria:")
@@ -328,8 +349,6 @@ class globalPlanner:
                     print(str(self.rotas["x"][self.pos]) + " - " + str(self.rotas["y"][self.pos]) + " - " + str(self.rotas["z"][self.pos]))
                     self.unic["print"], self.unic["andar"] = logStateMachine("Walking", self.unic["print"], self.unic["andar"])
                     self.tempo["wait"] = andarGlobal(self.rotas["x"][self.pos], self.rotas["y"][self.pos], self.rotas["z"][self.pos], self.rotas["yaw"][self.pos], self.currentPosX, self.currentPosY, self.currentPosZ, self.currentPosYaw)
-                #     plt.plot(self.rotas["x"], self.rotas["y"])
-                # plt.plot(self.a, self.b, ".k")
 
                 if self.unic["SM"] == 1:
                     self.counts["tempo"] = time()
@@ -360,13 +379,6 @@ class globalPlanner:
                 if time() - self.counts["parar"] > self.tempo["parar"]: 
                     print(self.pos)
                     print(len(self.rotas["x"]))
-                    # print(self.a)
-                    # print(self.rotas["x"])
-                    # print(self.pos)
-                    # plt.plot(self.a, self.b, ".k")
-                    # plt.plot(self.currentPosX, self.currentPosY, ".b")
-                    # plt.plot(self.rotas["x"], self.rotas["y"], "-r")
-                    # plt.show()
                     self.status = self.arrived
                     self.pos += 1            
 

@@ -31,6 +31,9 @@ from utilsUAV import *
 
 class globalPlanner:
     def __init__(self):
+        self.memoriaDoPc = 16000 # MB
+        self.processadorDoPc = 2800 # MHz
+
         ph = [[[0.0, 10.0], [0.0, 0.0]], [[0.0, 10.0], [10.0, 10.0]], [[6.5, 8.5], [2.0, 2.0]], [[2.0, 4.5], [8.5, 8.5]], [[2.0, 6.5], [4.0, 4.0]], [[3.5, 5.0], [5.2, 5.2]], [[5.0, 6.5], [6.4, 6.4]], [[8.0, 9.0], [8.0, 8.0]], [[6.5, 8.0], [5.2, 5.2]], [[2.0, 4.5], [2.0, 2.0]]]
         pv = [[[10.0, 10.0], [0.0, 10.0]], [[0.0, 0.0], [0.0, 10.0]], [[4.5, 4.5], [0.0, 2.0]], [[2.0, 2.0], [4.0, 8.5]], [[3.5, 3.5], [4.0, 5.2]], [[5.0, 5.0], [5.2, 6.4]], [[6.5, 6.5], [6.4, 8.7]], [[8.0, 8.0], [8.0, 10.0]], [[9.0, 9.0], [5.2, 8.0]], [[6.5, 6.5], [2.0, 5.2]], [[8.0, 8.0], [3.5, 5.2]]]
 
@@ -85,19 +88,7 @@ class globalPlanner:
         # Trajectory
         self.rotas = {}
         self.rotas["x"], self.rotas["y"], self.rotas["z"], self.rotas["yaw"] = np.array([]), np.array([]), np.array([]), np.array([])
-        ax0 = [ 2.0, 2.1595752,   2.31915041,  2.47872561,  2.63830081,  2.79787602,  2.95745122,  3.11702642,  3.27660163,  3.43617683,  3.59575204,  3.75532724,  3.91490244,  4.13426649,  4.42194478,  4.70962306,  4.99730135,  5.28497964,  5.57265793,  5.86033622,  6.00417537,  6.29185366,  6.57953195,  6.86721024,  7.15488852,  7.44256681,  7.7302451,   8.01792339,  8.30560168,  8.59327997,  8.88095826,  9.0, 9.0, 9.0, 9.0, 9.0,  9.0, 9.0, 9.0, 9.0, 9.0, 9.0,  9.17082007,  9.45849836,  9.74617665, 10.03385494, 10.32153323, 10.60921152, 10.89688981, 11.1845681,  11.47224639, 11.75992468, 12.04760297, 12.33528126, 12.62295954, 12.91063783, 13.19831612, 13.48599441, 13.7736727,  14.06135099, 14.34902928, 14.63670757, 14.92438586, 15.0,         15.0,         15.0, 15.0,         15.0,         15.0,         15.0, 15.22581217, 15.51349046, 15.80116875, 16.08884704, 16.37652533, 16.66420362, 16.95188191, 17.2395602, 17.52723849, 17.81491678, 18.10259507, 18.39027336, 18.67795165, 18.9, 18.9, 18.9, 18.9, 18.9, 18.9, 18.9, 18.9, 18.9, 18.9, 18.9, 18.9, 18.9, 18.9, 18.9, 18.9, 18.9, 18.9]
-        ay0 = [4.0, 4.23936281, 4.47872561, 4.71808842, 4.95745122, 5.19681403, 5.43617683, 5.67553964, 5.91490244, 6.15426525, 6.39362805, 6.63299086, 6.87235366, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 6.84001732, 6.56710173, 6.29418615, 6.02127056, 5.74835497, 5.47543938, 5.20252379, 4.9296082,  4.65669262, 4.38377703, 4.11086144, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.25330823, 4.54098651, 4.8286648, 5.11634309, 5.40402138, 5.69169967, 5.97937796, 6.26705625, 6.55473454, 6.84241283, 7.13009112, 7.41776941, 7.7054477,  7.99312599, 8.28080428, 8.56848257, 8.85616086]
-        az0 = [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 1.94667244, 1.85570058, 1.76472872, 1.67375685, 1.58278499, 1.49181313, 1.40084126, 1.3098694,  1.21889754, 1.12792568, 1.03695381, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.21206415, 1.49974244, 1.78742073, 2.07509902, 2.36277731, 2.6504556,  2.93813389, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0]
-        ax1=[2.1, 2.3769350533478777, 2.753870106695755, 3.959428613344527, 6.252235032204958, 8.043866923745487, 9.91593552547417, 10.058998588483274, 11.01229099628721, 12.124465472058471, 13.07775787986241, 14.0, 14.0, 14.0, 14.0, 14.0, 14.0, 14.0, 14.0, 13.999999999999998, 14.0, 13.999999999999998, 14.0, 14.0, 14.0, 14.0, 14.108934402843776, 15.091565725212527, 16.074197047581286, 17.05682836995004, 18.039459692318793, 19.0, 19.0]
-        ay1=[2.1, 4.261610320087264, 6.52322064017453, 8.0, 8.0, 7.9780665381272575, 7.042032237262916, 7.0, 7.0, 7.0, 7.000000000000002, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 6.999999999999999, 7.0, 6.999999999999999, 7.0, 6.838959564262494, 5.856328241893737, 4.873696919524981, 4.0, 4.0, 4.0, 4.0, 4.0, 5.4669859511741405, 7.715267618608777]
-        az1=[2.0, 2.0, 2.0, 2.0, 2.0, 1.978066538127257, 1.042032237262915, 1.0147496471208182, 1.2530727490718023, 1.5311163680146174, 1.7694394699656024, 2.195777790999999, 2.359549678061458, 2.523321565122917, 2.687093452184376, 2.8508653392458356, 3.014637226307295, 3.1784091133687546, 3.34218100043021, 3.5059528874916692, 3.6697247745531287, 3.833496661614588, 3.9972685486760473, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 3.7066028097651724, 3.2569464762782445]
-        ax2=[2.1, 2.0, 2.0, 2.849650475337115, 4.949653464304296, 7.049656453271476, 8.099657947755068, 9.149659442238656, 11.074662182125241, 12.124663676608833, 13.0, 13.0, 13.0, 13.0, 13.028539646397071, 14.082871062320471, 15.137202478243875, 16.015811991513377, 17.07014340743678, 18.124474823360185, 19.000000000000004, 19.000000000000004]
-        ay2=[2.1, 4.284384734500703, 6.393047566347506, 7.999999999999999, 7.999999999999999, 8.0, 8.0, 7.999999999999999, 8.0, 8.0, 8.0, 6.958732698719235, 5.904401282795832, 4.850069866872429, 3.9999999999999996, 4.0, 4.0, 4.0, 4.0, 4.000000000000001, 5.553809959238892, 7.621523983695556]
-        az2=[2.0, 2.0, 2.0, 1.9227590476966256, 1.7318496850632457, 1.5409403224298657, 1.4454856411131756, 1.3500309597964855, 1.1750307107158873, 1.0795760293991972, 2.756882566780065, 4.0, 4.0, 4.0, 3.9999999999999996, 4.0, 4.0, 4.0, 4.0, 4.000000000000001, 3.6892380081522225, 3.2756952032608897]
-        self.rotas["x"] = ax1#(np.array(ax2)*5).tolist()
-        self.rotas["y"] = ay1#(np.array(ay2)*5).tolist()
-        self.rotas["z"] = az1#(np.array(az2)/0.8).tolist()
-        self.rotas["yaw"] = [0] * len(self.rotas["x"])
+
         # Values to be Changed by the User
         # self.rotas["x"] = [7.1, 10, 11, 12, 15, 17, 20, 20.1] 
         # self.rotas["y"] = [7.1, 10, 11, 12, 12, 11, 15, 15.1] 
@@ -154,10 +145,10 @@ class globalPlanner:
         _ = rospy.Subscriber("/battery/percent", Int32, self.callbackBatteryGazebo) # 20
         ############# Avoid Obstacle
         # _ = rospy.Subscriber("/uav1/odometry/odom_main_innovation", Odometry, self.callbackDynamic)
-        # _ = rospy.Subscriber("/uav1/odometry/gps_local_odom", Odometry, self.callbackStatic)
+        _ = rospy.Subscriber("/uav1/odometry/gps_local_odom", Odometry, self.callbackStatic)
         ############# Mapping
         # # _ = rospy.Subscriber("/build_map3D", PoseArray, self.callbackBuildMap)
-        # _ = rospy.Subscriber("/uav1/velodyne/scan", PointCloud2, self.callbackBuildMap3D)
+        _ = rospy.Subscriber("/uav1/velodyne/scan", PointCloud2, self.callbackBuildMap3D)
         # _ = rospy.Subscriber("/zed/cloud_map", PointCloud2, self.callbackBuildMapZed3D)
         # _ = rospy.Subscriber("/orb_slam2_rgbd/map_points", PointCloud2, self.callbackBuildMap3DOrbs)
         # _ = rospy.Subscriber("/orbslam/filtered/map_points", PointCloud2, self.callbackBuildMap3DOrbsFiltered)
@@ -175,7 +166,7 @@ class globalPlanner:
 
     # ---------------------------- Loop :3 ----------------------------------
     def callbackMain(self, odom):
-        if self.unic["SM"] == 1:# and self.unic["definirRota"] == 1:     
+        if self.unic["SM"] == 1 and self.unic["definirRota"] == 1:     
             self.rotinaNormal()
 
     # ---------------------------- Bateria ----------------------------------
@@ -198,9 +189,10 @@ class globalPlanner:
             self.unic["bateriaGazebo"] = 1
 
         if self.unic["bateriaGazebo"] == 2:
+            print(bat.data)
             self.bateriaGazebo["final"] = bat.data
             self.bateriaGazebo["uso"] = self.bateriaGazebo["final"] - self.bateriaGazebo["inicial"]
-            self.unic["bateriaGazebo"] = 4
+            # self.unic["bateriaGazebo"] = 4
 
     # ---------------------------- Construir Mapa ----------------------------------
     def callbackLaser(self, alt):
@@ -411,21 +403,7 @@ class globalPlanner:
                     self.c.append(round(i3+2))
                     self.abc.append([round(i1), round(i2), round(i3)])
 
-            # if self.currentPosX > 15 and self.currentPosY > 12 and self.currentPosZ > 1 and self.currentPosX < 20 and self.currentPosY < 15:
-            #     ax = plt.axes(projection = "3d")
-            #     ax.plot3D(self.a, self.b, self.c, 'k.') 
-            #     ax.plot3D(self.rotas["x"], self.rotas["y"], self.rotas["z"], 'y.') 
-            #     ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
-            #     ax.set_xlim(-10,100) 
-            #     ax.set_ylim(-10,100) 
-            #     ax.set_zlim(0,4) 
-            #     plt.pause(0.01)
-            #     plt.show()
-
             if self.unic["definirRota"] == 0:
-                # print(self.a)
-                # print(self.b)
-                # print(self.c)
                 _, t, rx, ry, rz = alg.run(show=0, vmx=self.a, vmy=self.b, vmz=self.c, startx=self.currentPosX, starty=self.currentPosY, startz=self.currentPosZ, p1=self.p)
                 rx, ry, rz = rotaToGazebo3D(rx, ry, rz, self.a, self.b, self.c, self.distNodes)
                 self.rotas["x"] = np.array(rx)
@@ -438,13 +416,9 @@ class globalPlanner:
                 ax.plot3D(self.a, self.b, self.c, 'k.') 
                 ax.plot3D(self.rotas["x"], self.rotas["y"], self.rotas["z"], 'y.') 
                 ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
-                # ax.set_xlim(0,20) 
-                # ax.set_ylim(0,10) 
                 ax.set_zlim(0,4) 
                 plt.pause(0.01)
                 plt.show()
-                # print(self.rotas["x"])
-                # print(self.rotas["y"])
                 self.unic["definirRota"] = 1
 
             self.velodyne = 0
@@ -487,21 +461,6 @@ class globalPlanner:
                 ax.set_zlim(0,4) 
                 plt.pause(0.01)
                 plt.show()
-
-            # if self.unic["definirRota"] == 0:
-            #     # print(self.a)
-            #     # print(self.b)
-            #     # print(self.c)
-            #     _, t, rx, ry, rz = alg.run(show=0, vmx=self.a, vmy=self.b, vmz=self.c, startx=self.currentPosX, starty=self.currentPosY, startz=self.currentPosZ, p1=self.p)
-            #     rx, ry, rz = rotaToGazebo3D(rx, ry, rz, self.a, self.b, self.c, self.distNodes)
-            #     self.rotas["x"] = np.array(rx)
-            #     self.rotas["y"] = np.array(ry)
-            #     self.rotas["z"] = np.array(rz) # [self.altura] * len(rx)
-            #     self.rotas["yaw"] = np.array([self.anguloGeral] * len(rx))
-            #     print("rota definida")
-            #     # print(self.rotas["x"])
-            #     # print(self.rotas["y"])
-                # self.unic["definirRota"] = 1
 
             self.velodyne = 0
 
@@ -572,19 +531,6 @@ class globalPlanner:
 
 
     def callbackHokuyo20(self, data):
-        # header: 
-        # seq: 193
-        # stamp: 
-        #     secs: 57
-        #     nsecs:  24000000
-        # frame_id: "uav1/fcu"
-        # angle_min: -2.3561899662017822
-        # angle_max: 2.3561899662017822
-        # angle_increment: 0.006554075051099062
-        # time_increment: 0.0
-        # scan_time: 0.0
-        # range_min: 0.10000000149011612
-        # range_max: 30.0
         a, b, c = [], [], []
         for index, value in enumerate(data.ranges[120:600]):
             if value < 30:
@@ -646,17 +592,6 @@ class globalPlanner:
                     self.c.append(round(i3+1))
                     self.abc.append([round(i1), round(i2), round(i3)])
 
-        # if self.currentPosX > 15 and self.currentPosY > 12 and self.currentPosZ > 1 and self.currentPosX < 20 and self.currentPosY < 15:
-        #     ax = plt.axes(projection = "3d")
-        #     ax.plot3D(self.a, self.b, self.c, 'k.') 
-        #     ax.plot3D(self.rotas["x"], self.rotas["y"], self.rotas["z"], 'y.') 
-        #     ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
-        #     ax.set_xlim(-10,100) 
-        #     ax.set_ylim(-10,100) 
-        #     ax.set_zlim(0,4) 
-        #     plt.pause(0.01)
-        #     plt.show()
-
         if self.unic["definirRota"] == 0:
             print("Iniciando a definir rota")
             _, t, rx, ry, rz = alg.run(show=0, vmx=self.a, vmy=self.b, vmz=self.c, startx=self.currentPosX, starty=self.currentPosY, startz=self.currentPosZ, p1=self.p)
@@ -688,10 +623,6 @@ class globalPlanner:
 
             self.newA, self.newB, self.newC = [], [], []
 
-            # angAbertura = 120
-            # randSup = self.rand + math.radians(angAbertura/2) if self.rand + math.radians(angAbertura/2) < math.radians(360) else self.rand + math.radians(angAbertura/2) - math.radians(360)
-            # randInf = self.rand - math.radians(angAbertura/2) if self.rand - math.radians(angAbertura/2) > 0 else math.radians(360) + (self.rand - math.radians(angAbertura/2))
-            
             for x in int_data:
                 if round(x[2] > 0):
                     self.newA.append(round(x[0]))
@@ -708,16 +639,6 @@ class globalPlanner:
 
             for i1, i2, i3 in zip(pl[0], pl[1], pl[2]):
                 dentroRange = 1
-                # angPontos = definir_angulo(self.currentPosX, self.currentPosY, i2+3, i1+3)
-                # if randSup > self.rand > randInf: # 100 - 190 - 10
-                #     if randSup > angPontos > randInf:
-                #         dentroRange = 1
-                # elif self.rand < randInf and self.rand < randSup: # 50 - 140 - 320
-                #     if 0 < angPontos < randSup or math.radians(360) > angPontos > randInf:
-                #         dentroRange = 1 
-                # elif self.rand < randInf and self.rand < randSup: # 300 - 30 - 210
-                #     if 0 < angPontos < randSup or math.radians(360) > angPontos > randInf:
-                #         dentroRange = 1
 
                 if dentroRange:
                     if [round(i1), round(i2), round(i3)] not in self.abc and round(i2)>1:
@@ -729,31 +650,8 @@ class globalPlanner:
                         self.c.append(round(i3+1))
                         self.abc.append([round(i1), round(i2), round(i3)])
 
-            # self.a = self.p.xobs
-            # self.b = self.p.yobs
-            # self.c = self.p.zobs
-
-            # if self.currentPosX > 15 and self.currentPosY > 12 and self.currentPosZ > 1 and self.currentPosX < 20 and self.currentPosY < 15:
-            #     ax = plt.axes(projection = "3d")
-            #     ax.plot3D(self.a, self.b, self.c, 'k.') 
-            #     ax.plot3D(self.rotas["x"], self.rotas["y"], self.rotas["z"], 'y.') 
-            #     ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
-            #     ax.set_xlim(-10,100) 
-            #     ax.set_ylim(-10,100) 
-            #     ax.set_zlim(0,4) 
-            #     plt.pause(0.01)
-            #     plt.show()
-
             if self.unic["definirRota"] == 0:
                 print("Iniciando a definir rota")
-                # ax = plt.axes(projection = "3d")
-                # ax.plot3D(self.a, self.b, self.c, 'k.') 
-                # ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
-                # ax.set_xlim(0,20) 
-                # ax.set_ylim(0,10) 
-                # ax.set_zlim(0,5) 
-                # plt.pause(0.01)
-                # plt.show()
                 _, t, rx, ry, rz = alg.run(show=0, vmx=self.a, vmy=self.b, vmz=self.c, startx=self.currentPosX, starty=self.currentPosY, startz=self.currentPosZ, p1=self.p)
                 rx, ry, rz = rotaToGazebo3D(rx, ry, rz, self.a, self.b, self.c, self.distNodes)
                 self.rotas["x"] = np.array(rx)
@@ -769,84 +667,25 @@ class globalPlanner:
                 ax.set_zlim(0,6) 
                 plt.pause(0.01)
                 plt.show()
-                # print(self.a)
-                # print(self.b)
-                # print(self.c)
                 print("rota definida")                              
                 self.unic["definirRota"] = 1
-
-            # if 10<time()-self.counts["total"]< 15:
-            #     ax = plt.axes(projection = "3d")
-            #     ax.plot3D(self.a, self.b, self.c, 'y.') 
-            #     ax.plot3D(a1, a2, a3, 'b.') 
-            #     ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
-            #     ax.set_xlim(-10,100) 
-            #     ax.set_ylim(-10,100) 
-            #     ax.set_zlim(0,3) 
-            #     try:
-            #         ax.set_title(str(self.pos) + " - " + str(math.degrees(self.currentPosYaw)) + " - " + str(math.degrees(math.atan2(self.rotas["y"][self.pos+1] - self.currentPosY, self.rotas["x"][self.pos+1] - self.currentPosX))))
-            #     except:
-            #         pass
-            #     ax.set_xlabel("x (m)" + str(self.currentPosX))
-            #     ax.set_ylabel("y (m)" + str(self.currentPosY))
-            #     ax.set_zlabel("z (m)" + str(self.currentPosZ))
-            #     ax.view_init(azim=-111, elev=77)
-            #     # plt.savefig("new" + str(self.numeroImagem))
-
-            #     # self.f.write("---------------------------------------------------------------\n")
-            #     # self.f.write(str(self.numeroImagem) + "\n")
-            #     # self.f.write(str(self.pos) + "\n")
-            #     # self.f.write("Posicao atual: x-" + str(self.currentPosX) + " | y-" + str(self.currentPosY) + " | z-" + str(self.currentPosZ) + " | yaw-" + str(math.degrees(self.currentPosYaw)) + "\n")
-            #     # self.f.write("Indo para: x-" + str(self.rotas["x"][self.pos]) + " | y-" + str(self.rotas["y"][self.pos]) + " | z-" + str(self.rotas["z"][self.pos]) + " | yaw-" + str(math.degrees(self.rotas["yaw"][self.pos])) + "\n")
-            #     # self.f.write("Angulo entre posicao inicial e a proxima: " + str(math.degrees(math.atan2(self.rotas["y"][self.pos+1] - 7, self.rotas["x"][self.pos+1] - 7))) + "\n")
-            #     # self.f.write("Angulo entre posicao atual e a proxima: " + str(math.degrees(math.atan2(self.rotas["y"][self.pos+1] - self.currentPosY, self.rotas["x"][self.pos+1] - self.currentPosX))) + "\n")
-            #     # self.f.write("Angulo entre posicao anterior e a proxima: " + str(math.degrees(math.atan2(self.rotas["y"][self.pos+1] - self.rotas["y"][self.pos], self.rotas["x"][self.pos+1] - self.rotas["x"][self.pos]))) + "\n")
-            #     # self.f.write("Angulo entre posicao anterior e a inicial: " + str(math.degrees(math.atan2(self.rotas["y"][self.pos] - 7, self.rotas["x"][self.pos] - 7))) + "\n")
-            #     # self.f.write("Angulo entre posicao atual e a inicial: " + str(math.degrees(math.atan2(self.currentPosY - 7, self.currentPosX - 7))) + "\n")
-            #     # self.f.write("\n")
-
-            #     plt.pause(0.01)
-            #     plt.show()
-
-            # self.numeroImagem += 1
 
             self.velodyne = 0
 
     def callbackBuildMap(self, obs):
         buildMapX, buildMapY, buildMapZ = [], [], []
-        # if round(time() - self.counts["total"])%5==0:
+
         for value in obs.poses:
-            # if 0 < value.position.x < 50 and 0 < value.position.y < 50:
             buildMapX.append(value.position.x)
             buildMapY.append(value.position.y)
             buildMapZ.append(value.position.z)
         
         if len(buildMapX) > 5: # if self.trocaYaw:
-            # pl = self.rotationMatrix(self.currentPosYaw - math.pi/4, buildMapX, buildMapY, buildMapZ)
-            # for v1, v2, v3 in zip(pl[0], pl[1], pl[2]):
             for v1, v2, v3 in zip(buildMapX, buildMapY, buildMapZ):
                 self.a.append(v1)
                 self.b.append(v2)
                 self.c.append(v3)
-                # self.contador0 += 1
-                # self.x = self.rotas["x"][self.contador0]
-                # self.y = self.rotas["y"][self.contador0]
-                # self.trocaYaw = 0
-
-        # a,b = com capa | a1,b1 = sem capa
-        # if self.trocaYaw:
-        #     pl = rotationMatrix(self.currentPosYaw, buildMapX, buildMapY, buildMapZ)
-        #     for i1, i2, i3 in zip(pl[0], pl[1], pl[2]):
-        #         self.a.append(i1)
-        #         self.b.append(i2)
-        #         self.c.append(i3)
-        #         self.trocaYaw = 0
-        
-        # print("-------------------------------")
-        # self.a, self.b, self.c, self.a1, self.b1, self.c1, self.a1b1c1 =  mapping3D(buildMapX, buildMapY, buildMapZ, self.a, self.b, self.c, self.a1b1c1, tamCapa=0)
-        # self.a, self.b, self.a1, self.b1, self.a1b1c1 =  laserROS(buildMapX, buildMapY, self.a, self.b, self.a1b1c1, tamCapa=0)
-        # print(self.a)
-        # print(round(time() - self.counts["total"]))
+         
         print(time() - self.counts["total"])
         if round(time() - self.counts["total"])%1==0 and 24 > time() - self.counts["total"] > 15:
             fig = plt.figure()
@@ -863,28 +702,9 @@ class globalPlanner:
             ax.set_xlim(-50, 100)
             ax.set_ylim(-50, 100)
             ax.set_zlim(-3, 7)
-            # ax.azim = -124
             ax.view_init(73, -159)
-            # plt.savefig("orbsslam" + str(self.contador) + ".png")
-            # plt.savefig("orbsslamNewView" + str(self.contador) + ".png")
-            # plt.pause(0.01)
             self.contador += 1
             plt.show()
-            # plt.plot(self.currentPosX, self.currentPosY, ".r")
-            # plt.plot(self.rotas["x"], self.rotas["y"], "-r")
-            # plt.plot(buildMapX, buildMapY, ".y")
-            # plt.plot(self.a, self.b, ".k")
-            # plt.show()
-        
-        # if self.unic["definirRota"] == 0:
-        #     _, t, rx, ry, rz = alg.run(show=0, vmx=self.a, vmy=self.b, vmz=self.c, startx=self.currentPosX, starty=self.currentPosY, startz=self.currentPosZ, p1=self.p)
-        #     # rx, ry, rz = rotaToGazebo3D(rx, ry, rz, self.a, self.b, self.c, self.distNodes)
-        #     self.rotas["x"] = rx
-        #     self.rotas["y"] = ry
-        #     self.rotas["z"] = rz # [self.altura] * len(rx)
-        #     self.rotas["yaw"] = [self.anguloGeral] * len(rx)
-        #     print("rota definida")
-        #     self.unic["definirRota"] = 1
 
     # ---------------------------- Onde o UAV ta ----------------------------------
     def callbackPosicao(self, odom):
@@ -905,25 +725,14 @@ class globalPlanner:
             # ---------------- Decidindo sua vida ---------------------
             if self.status == self.arrived:
                 self.unic["idle"] = 0
-
                 # ---------------- Cabou ---------------------
-                # if self.rotas["x"][-1] == 36 and self.rotas["x"][-1] == 32:
-                if ((abs(self.currentPosX - self.p.xt) < 0.2 and abs(self.currentPosY - self.p.yt) < 0.2 and abs(self.currentPosZ - self.p.yt) < 0.6) or(self.pos == len(self.rotas["x"]))) and self.unic["definirRota"]==1:
+                if ((abs(self.currentPosX - self.rotas["x"][-1]) < 0.2 and abs(self.currentPosY - self.rotas["y"][-1]) < 0.2 and abs(self.currentPosZ - self.rotas["z"][-1]) < 0.6) or(self.pos == len(self.rotas["x"]))) and self.unic["definirRota"]==1:
                 # if self.pos == len(self.rotas["x"]):
                     if self.unic["bateria"]!= 4: self.unic["bateria"] = 2
-                    if self.unic["bateriaGazebo"]!= 4: self.unic["bateriaGazebo"] = 2
+                    if self.unic["bateriaGazebo"] == 1: self.unic["bateriaGazebo"] = 2
 
                     self.memoria["final"] = memory_usage()
                     self.cpu["final"] = psutil.cpu_percent()
-
-                    # if self.rotas["x"][-1] != self.land:
-                    #     self.rotas["x"].append(25)
-                    #     self.rotas["y"].append(18)
-                    #     self.rotas["z"].append(self.altura)
-                    #     self.rotas["yaw"].append(self.rotas["yaw"][-1])
-                        # self.pos -= 1
-                        # print(self.rotas["x"])
-                        # print("Ate mais e obrigado pelos peixes")
 
                     print(self.rotas["x"])
                     print(self.rotas["y"])
@@ -931,21 +740,36 @@ class globalPlanner:
                     print("Uso da bateria:")
                     print(self.bateria)
                     print("Uso da bateria Gazebo:")
+                    self.bateriaGazebo["uso"] = self.bateriaGazebo["inicial"] - self.bateriaGazebo["atual"]
                     print(self.bateriaGazebo)
                     print("Comprimento: " + str(distancia_rota(self.rotas["x"], self.rotas["y"])))
-                    print("Media do tempo: " + str(stc.mean(self.variaveisLog["tt"])))
                     try:
+                        print("Media do tempo: " + str(stc.mean(self.variaveisLog["tt"])))
                         print("Variancia do tempo: " + str(stc.variance(self.variaveisLog["tt"])))
                         print("Desvio padrao do tempo: " + str(stc.stdev(self.variaveisLog["tt"])))
                     except:
                         pass
-                    print("Maior do tempo: " + str(max(self.variaveisLog["tt"])))
-                    print("Menor do tempo: " + str(min(self.variaveisLog["tt"])))
+                    try:
+                        print("Maior do tempo: " + str(max(self.variaveisLog["tt"])))
+                        print("Menor do tempo: " + str(min(self.variaveisLog["tt"])))
+                    except:
+                        pass
                     print("Tempo de voo: " + str(time() - self.counts["total"]))
 
                     print("CPU:")
                     print(self.cpu)
                     print("Memoria:")
+                    print(self.memoria)
+
+                    print("CPU Real:")
+                    self.cpu["inicial"] *= self.processadorDoPc / 100
+                    self.cpu["final"] *= self.processadorDoPc / 100
+                    self.cpu["uso"] *= self.cpu["final"] - self.cpu["inicial"]
+                    print(self.cpu)
+                    print("Memoria Real:")
+                    self.memoria["inicial"] *=  self.memoriaDoPc / 100
+                    self.memoria["final"] *=  self.memoriaDoPc / 100
+                    self.memoria["uso"] *= self.memoria["final"] - self.memoria["inicial"]
                     print(self.memoria)
 
                     if self.log:
@@ -1026,8 +850,6 @@ class globalPlanner:
                         acrZ = 0#-0.6 if self.rotas["z"][self.pos-1] > self.rotas["z"][self.pos] else 0.8
                         self.tempo["wait"] = andarGlobal(self.rotas["x"][self.pos], self.rotas["y"][self.pos], self.rotas["z"][self.pos] + acrZ, self.rotas["yaw"][self.pos], self.currentPosX, self.currentPosY, self.currentPosZ, self.currentPosYaw, rotacao=False)
                         self.velodyne = 1
-                    #     plt.plot(self.rotas["x"], self.rotas["y"])
-                    # plt.plot(self.a, self.b, ".k")
                 except:
                     pass
 
@@ -1074,15 +896,6 @@ class globalPlanner:
                 if time() - self.counts["parar"] > self.tempo["parar"]: 
                     print(self.pos)
                     print(len(self.rotas["x"]))
-                    # print(self.a)
-                    # print(self.rotas["x"])
-                    # print(self.pos)
-                    # plt.plot(self.a, self.b, ".k")
-                    # plt.plot(self.currentPosX, self.currentPosY, ".b")
-                    # plt.plot(self.rotas["x"], self.rotas["y"], "-r")
-                    # plt.xlim(0,50)
-                    # plt.ylim(0,50)
-                    # plt.show()
                     self.status = self.arrived
                     self.pos += 1            
 
