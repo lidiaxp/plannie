@@ -25,6 +25,13 @@ The project can be installed in any directory on the computer with the following
 - Decision maker supports modular localization, mapping, controller, and vision scripts;
 - Decision maker suport multi-UAVs.
 
+The path planning algorithms avaiable are: 
+
+- **Exact classical**: A*, Artificial Potential Field
+- **Aproximate classical**: Probabilistic Road Map, Rapid-Exploring Random Tree, Rapid-Exploring Random Tree - Connect
+- **Meta heuristic**: Particle Swarm Optimization, Grey Wolf Optimization, Glowworm Swarm Optimization
+- **Machine Learning**: Q-Learning
+
 ## Running Tests
 
 The environment is defined in helper/ambiente.py to 2D environments and in 3D/helper/ambiente.py to 3D environmets.
@@ -54,6 +61,94 @@ To run 3D tests in simulator and real environments:
   cd 3D
   python3 movimentoROS3D.py
 ```
+
+## Mode of Use
+
+In the movimentoROS* codes: 
+
+- It is possible choose the path planning technique in the imports, the strucutre is similar to these model and can be change to any path planning algorithm present in the plannie. 
+- You can add other variables similar to this to use different algorithms to initial planning and when discover new obstacles. The technique used in this cases are defined in callbackStatic (when discover new environments) and callbackBuildMap (initial planning).
+- The dynamic path planning are disabled to simulator, but if you need use just modify the callbackDynamic
+
+In the unknownEnvironment* codes:
+
+- There are a list of algorithms avaiable at the start (next to line 25), just turn the variable true to use the technique.
+- In this case, by default, is not possible use different algorithms to initial planning and when discover new obstacles. However, it is possible import the technique in helper/unknown.py and define the best technique to each planning. The initial planning is defined in alg.run next to line 96, and the planning when discover new obstacles is defined in alg.run nexto to line 326.
+- Define dynamic obstacles in helper/unknown.py in the variables obs* (next to line 22).
+- The algorithm to be used in dynamic path planning is defined with the function newSmooth nexto to line 276 and 279. This function uses Pedestrian Avoidance Method, if you need use Riemannian Motion Policies, import it at start and switch this function.
+
+If you will carry out flights in real environment, have several scripts to support use the sensors in the folder _helper_.
+
+## Change Environment
+
+To change 2D environment use the file ```helper/ambiente.py``` and modify these variables:
+
+- **tamCapa**: define the size of risk zone
+- **self.limiar**: define the environment size
+- **self.xs**: define the start node in X
+- **self.ys**: define the start node in Y
+- **self.xt**: define the goal node in X
+- **self.yt**: define the goal node in Y
+- **obsVx**: define x-axis of vertical obstacles
+- **obsVy**: define y-axis of horizontal obstacles
+- **obsHx**: define x-axis of vertical obstacles
+- **obsHy**: define y-axis of horizontal obstacles
+
+The difference between vertical and horizonal obstacles just matter if use risk zone.
+
+To change 3D environment use the file ```3D/helper/ambiente.py``` and modify these variables:
+
+- **tamCapa**: define the size of risk zone
+- **self.limiar**: define the environment size
+- **self.xs**: define the start node in X
+- **self.ys**: define the start node in Y
+- **self.ys**: define the start node in Z
+- **self.zt**: define the goal node in X
+- **self.yt**: define the goal node in Y
+- **self.zt**: define the goal node in Z
+- **vermelhoX**: define x-axis of walls that the vehicle can not pass 
+- **vermelhoY**: define y-axis of walls that the vehicle can not pass 
+- **rosaX**: define x-axis of walls that the vehicle just go over 
+- **rosaY**: define y-axis of walls that the vehicle just go over 
+- **amareloX**: define y-axis of walls that the vehicle just go under 
+- **amareloY**: define y-axis of walls that the vehicle just go under
+
+To modify the height of these walls change zobs* variables. If you want define the obstacles nodes separately, ignore the variables [vermelhoX, vermelhoY, rosaX, rosaY, amareloX, amareloY] and change:
+
+- **self.xobs**: define all X nodes
+- **self.yobs**: define all Y nodes
+- **self.zobs**: define all Z nodes
+
+To use external maps:
+- **houseExop maps**: run readFromHouseExpo function in ```helper/ocupancyGridMap.py``` (defining the json file form houseExpo) and import the return in the ambiente.py file 
+- **Videogame maps**: run readFromWarframe function in ```helper/ocupancyGridMap.py``` and import the return in the ambiente.py file 
+
+To create your own maps:
+
+- **2D indoor**: ```python3 helper/createScenario/createScenario.py``` and draw your scenario, when the pointer out from the screen the x and y nodes will be showed in the terminal.
+- **2D/3D indoor**: the file ```helper/createScenario/caixas.py``` will export, in a .txt, all models to be used in a .world file (from gazebo) to build the environment. The sctructure is the same of 3D environment in ```3D/helper/ambiente.py```.
+- **Forests**: the file ```helper/createScenario/createGazeboModel.py``` export a .world to be used in Gazebo simulator. The variable size1 and size2 define the size of the forest, sapce is the spacing between the trees, beta is the forest density. It is possible to add gaps with the function createClareira (example next to line 300). The alpha variable represents the gaps density. 
+
+## Extra Features
+
+To use travelling salesman problem use one of these codes:
+
+```bash
+  python3 tsp/cvDict.py
+  python3 tsp/cvKNN.py
+  python3 tsp/pcv.py
+```
+
+The first use a deterministic technique, the second use a K-Nearest Neighbor, and the last use a permutation.
+
+To use coverage path planning with sweep algorithm:
+
+```bash
+  python3 coverageFolder/grid_based_sweep_coverage_path_planner.py
+```
+
+To use these algorithms in the primary code import them at the start and define the use. Commonly, the coverage algorithm is used in __ init __ and tsp is used to optimize some route.
+
 ## License
 
 MIT License
@@ -81,6 +176,6 @@ SOFTWARE.
   
 ## Feedback
 
-If you have any feedback, please reach out to us at lidia@estudante.ufscar.br.
+If you have any feedback, please reach out to us at lidia@estudante.ufscar.br with subject "Plannie - Feedback".
 
   

@@ -274,22 +274,23 @@ tam = 50 # tamanho da floresta
 size1, size2 = tam, tam
 alfa = 1 # best 1
 beta = 0 # best 0
+space = 4
 matriz = np.ones((size1, size2))
 for i in range(0,size1):
-    for j in range(0,size2,4): # esse 4 eh o espacamento entre cada arvore
+    for j in range(0,size2,space): # esse 4 eh o espacamento entre cada arvore
         # se alterar o 4 vai os j, por exemplo, se for 3, tira o j-2, se for 2, tira o j-2 e j-1
-        #if random.random() < beta: 
-        matriz[i][j-2] = 0
-        matriz[i][j-1] = 0
-        matriz[i][j] = 0
+        if random.random() < beta: 
+          matriz[i][j-2] = 0
+          matriz[i][j-1] = 0
+          matriz[i][j] = 0
 
-for i in range(0,size1,4):
+for i in range(0,size1,space):
     for j in range(0,size2): # esse 4 eh o espacamento entre cada arvore
         # se alterar o 4 vai os j, por exemplo, se for 3, tira o j-2, se for 2, tira o j-2 e j-1
-        #if random.random() < beta:
-        matriz[i-2][j] = 0 
-        matriz[i-1][j] = 0 
-        matriz[i][j] = 0
+        if random.random() < beta:
+          matriz[i-2][j] = 0 
+          matriz[i-1][j] = 0 
+          matriz[i][j] = 0
         
 
 # matriz[i][j] = [[0 for i in range(size1)] for j in range(size2) if random.random() < beta]

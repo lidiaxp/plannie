@@ -167,142 +167,142 @@ def run(valid, q, alg, show=False, rmv=False):
                         checarAFrente = 20 # [m]
                         pontoX, pontoY, _ = pontoAFrente(finalx[i], finaly[i], finalx, finaly, xt, yt, i, checarAFrente)
                         
-                        # if colidir(tx, ty, finalx[i], finaly[i], pontoX, pontoY, value=distanciaObstaculo, d=True) and checkObsD == 0:
-                        #     if obsD == 1:
+                        if colidir(tx, ty, finalx[i], finaly[i], pontoX, pontoY, value=distanciaObstaculo, d=True) and checkObsD == 0:
+                            if obsD == 1:
 
-                        #         for txPoint, tyPoint in zip(tx, ty):
-                        #             # TA VENDO PONTO REPETIDO (ta vendo atras <----)
-                        #             if dist_euclidiana(finalx[i], finaly[i], txPoint, tyPoint) < distanciaObstaculo:# and abs(angle2 - angle0) > math.radians(60):
-                        #                 vObsD["2"].append([txPoint, tyPoint])
+                                for txPoint, tyPoint in zip(tx, ty):
+                                    # TA VENDO PONTO REPETIDO (ta vendo atras <----)
+                                    if dist_euclidiana(finalx[i], finaly[i], txPoint, tyPoint) < distanciaObstaculo:# and abs(angle2 - angle0) > math.radians(60):
+                                        vObsD["2"].append([txPoint, tyPoint])
                                  
-                        #         if not rmv: print(vObsD["1"])
-                        #         if not rmv: print(vObsD["2"])
-                        #         # PRECISA IDENTIFICAR A DIRECAO SE NAO VAI DAR RUIM - OK
-                        #         pontoColisao, direc = intersecao_arrays(vObsD["1"], vObsD["2"])
-                        #         if not rmv: print(pontoColisao)
-                        #         angle1 = definir_angulo(finalx[i], finaly[i], pontoColisao[0], pontoColisao[1])
-                        #         angle2 = definir_angulo(finalx[i], finaly[i], pontoX, pontoY)
-                        #         distParede, deixaTriangulo = 2, False
+                                if not rmv: print(vObsD["1"])
+                                if not rmv: print(vObsD["2"])
+                                # PRECISA IDENTIFICAR A DIRECAO SE NAO VAI DAR RUIM - OK
+                                pontoColisao, direc = intersecao_arrays(vObsD["1"], vObsD["2"])
+                                if not rmv: print(pontoColisao)
+                                angle1 = definir_angulo(finalx[i], finaly[i], pontoColisao[0], pontoColisao[1])
+                                angle2 = definir_angulo(finalx[i], finaly[i], pontoX, pontoY)
+                                distParede, deixaTriangulo = 2, False
 
-                        #         # ESSE 90 TEM Q SER 45 PRA CADA LADO - OK ?
-                        #         if abs(angle1 - angle2) > math.radians(180) or colidir(a, b, finalx[i], finaly[i], pontoColisao[0], pontoColisao[1]):
-                        #             # TEM ALGO ERRADO AKI
-                        #             if not rmv: print("angle")
-                        #             if not rmv: print(math.degrees(angle1))
-                        #             if not rmv: print(math.degrees(angle2))
-                        #             if not rmv: print(math.degrees(angle1 - angle2))
-                        #             if not rmv: print("obstaculo dinamico n ira interferir")
-                        #         elif pontoColisao[0] < distParede or pontoColisao[1] < distParede or abs(pontoColisao[0] - p.limiar[0]) < distParede or abs(pontoColisao[1] - p.limiar[1]) < distParede:
-                        #             if not rmv: print("o desvio ficará muito perto das paredes")
-                        #             deixaTriangulo = True
-                        #         elif direc == 0 and pontoColisao[1] > pontoY: # subindo
-                        #             if not rmv: print("Obastaculo dinamico ja passou")
-                        #         elif direc == 1 and pontoColisao[1] < pontoY: # descendo
-                        #             if not rmv: print("Obastaculo dinamico ja passou")
-                        #         elif direc == 2 and pontoColisao[0] > pontoX: # esquerda
-                        #             if not rmv: print("Obastaculo dinamico ja passou")
-                        #         elif direc == 3 and pontoColisao[0] > pontoX: # direita
-                        #             if not rmv: print("Obastaculo dinamico ja passou")
-                        #         else: 
-                        #             # ?????????????????????
-                        #             # if len(finalx) > i+int(valorAuxiliar*2.5):
-                        #             #     print("1")
-                        #             #     rxx, ryy = replanning(finalx[i], finaly[i], pontoColisao[0], pontoColisao[1], finalx[i+int(valorAuxiliar*1.2)], finaly[i+int(valorAuxiliar*1.2)], finalx[i+int(valorAuxiliar*2.5)], finaly[i+int(valorAuxiliar*2.5)])
+                                # ESSE 90 TEM Q SER 45 PRA CADA LADO - OK ?
+                                if abs(angle1 - angle2) > math.radians(180) or colidir(a, b, finalx[i], finaly[i], pontoColisao[0], pontoColisao[1]):
+                                    # TEM ALGO ERRADO AKI
+                                    if not rmv: print("angle")
+                                    if not rmv: print(math.degrees(angle1))
+                                    if not rmv: print(math.degrees(angle2))
+                                    if not rmv: print(math.degrees(angle1 - angle2))
+                                    if not rmv: print("obstaculo dinamico n ira interferir")
+                                elif pontoColisao[0] < distParede or pontoColisao[1] < distParede or abs(pontoColisao[0] - p.limiar[0]) < distParede or abs(pontoColisao[1] - p.limiar[1]) < distParede:
+                                    if not rmv: print("o desvio ficará muito perto das paredes")
+                                    deixaTriangulo = True
+                                elif direc == 0 and pontoColisao[1] > pontoY: # subindo
+                                    if not rmv: print("Obastaculo dinamico ja passou")
+                                elif direc == 1 and pontoColisao[1] < pontoY: # descendo
+                                    if not rmv: print("Obastaculo dinamico ja passou")
+                                elif direc == 2 and pontoColisao[0] > pontoX: # esquerda
+                                    if not rmv: print("Obastaculo dinamico ja passou")
+                                elif direc == 3 and pontoColisao[0] > pontoX: # direita
+                                    if not rmv: print("Obastaculo dinamico ja passou")
+                                else: 
+                                    # ?????????????????????
+                                    # if len(finalx) > i+int(valorAuxiliar*2.5):
+                                    #     print("1")
+                                    #     rxx, ryy = replanning(finalx[i], finaly[i], pontoColisao[0], pontoColisao[1], finalx[i+int(valorAuxiliar*1.2)], finaly[i+int(valorAuxiliar*1.2)], finalx[i+int(valorAuxiliar*2.5)], finaly[i+int(valorAuxiliar*2.5)])
 
-                        #             #     auxi = max(abs(rxx[:-1][-1] - finalx[i+int(valorAuxiliar*2.5):][0]), abs(ryy[:-1][-1] - finaly[i+int(valorAuxiliar*2.5):][0]))
-                        #             #     a11 = np.linspace(rxx[:-1][-1], finalx[i+int(valorAuxiliar*2.5):][0], int(auxi))
-                        #             #     a22 = np.linspace(ryy[:-1][-1], finaly[i+int(valorAuxiliar*2.5):][0], int(auxi))
+                                    #     auxi = max(abs(rxx[:-1][-1] - finalx[i+int(valorAuxiliar*2.5):][0]), abs(ryy[:-1][-1] - finaly[i+int(valorAuxiliar*2.5):][0]))
+                                    #     a11 = np.linspace(rxx[:-1][-1], finalx[i+int(valorAuxiliar*2.5):][0], int(auxi))
+                                    #     a22 = np.linspace(ryy[:-1][-1], finaly[i+int(valorAuxiliar*2.5):][0], int(auxi))
 
-                        #             #     finalx = np.concatenate((finalx[:i], rxx[:-1], a11[1:-1], finalx[i+int(valorAuxiliar*2.5):]), axis=0)
-                        #             #     finaly = np.concatenate((finaly[:i], ryy[:-1], a22[1:-1], finaly[i+int(valorAuxiliar*2.5):]), axis=0)
-                        #             # else:
-                        #             # print("2")
+                                    #     finalx = np.concatenate((finalx[:i], rxx[:-1], a11[1:-1], finalx[i+int(valorAuxiliar*2.5):]), axis=0)
+                                    #     finaly = np.concatenate((finaly[:i], ryy[:-1], a22[1:-1], finaly[i+int(valorAuxiliar*2.5):]), axis=0)
+                                    # else:
+                                    # print("2")
                                     
 
-                        #             if direc == 0: pontoColisao[1] -= 2
-                        #             if direc == 1: pontoColisao[1] += 2
-                        #             if direc == 2: pontoColisao[0] += 2
-                        #             if direc == 3: pontoColisao[0] -= 2
+                                    if direc == 0: pontoColisao[1] -= 2
+                                    if direc == 1: pontoColisao[1] += 2
+                                    if direc == 2: pontoColisao[0] += 2
+                                    if direc == 3: pontoColisao[0] -= 2
 
-                        #             if deixaTriangulo:
-                        #                 # apesar da linha amarela, n apaga isso
-                        #                 valorDeEspacox1, valorDeEspacox2 = 0, 0
-                        #                 valorDeEspacoy1, valorDeEspacoy2 = 0, 0
-                        #             else:
-                        #                 stepSpace = 1
-                        #                 if direc == 0 or direc == 1: # obstaculo na vertical
-                        #                     if finalx[i] < xt:
-                        #                         valorDeEspacox1 = -stepSpace
-                        #                         valorDeEspacox2 = stepSpace
-                        #                         valorDeEspacoy1 = 0
-                        #                         valorDeEspacoy2 = 0
-                        #                     else:
-                        #                         valorDeEspacox1 = stepSpace
-                        #                         valorDeEspacox2 = +stepSpace
-                        #                         valorDeEspacoy1 = 0
-                        #                         valorDeEspacoy2 = 0
-                        #                 else: # obstaculo na horizontal
-                        #                     if finaly[i] < yt:
-                        #                         valorDeEspacoy1 = -stepSpace
-                        #                         valorDeEspacoy2 = stepSpace
-                        #                         valorDeEspacox1 = 0
-                        #                         valorDeEspacox2 = 0
-                        #                     else:
-                        #                         valorDeEspacoy1 = stepSpace
-                        #                         valorDeEspacoy2 = -stepSpace
-                        #                         valorDeEspacox1 = 0
-                        #                         valorDeEspacox2 = 0
+                                    if deixaTriangulo:
+                                        # apesar da linha amarela, n apaga isso
+                                        valorDeEspacox1, valorDeEspacox2 = 0, 0
+                                        valorDeEspacoy1, valorDeEspacoy2 = 0, 0
+                                    else:
+                                        stepSpace = 1
+                                        if direc == 0 or direc == 1: # obstaculo na vertical
+                                            if finalx[i] < xt:
+                                                valorDeEspacox1 = -stepSpace
+                                                valorDeEspacox2 = stepSpace
+                                                valorDeEspacoy1 = 0
+                                                valorDeEspacoy2 = 0
+                                            else:
+                                                valorDeEspacox1 = stepSpace
+                                                valorDeEspacox2 = +stepSpace
+                                                valorDeEspacoy1 = 0
+                                                valorDeEspacoy2 = 0
+                                        else: # obstaculo na horizontal
+                                            if finaly[i] < yt:
+                                                valorDeEspacoy1 = -stepSpace
+                                                valorDeEspacoy2 = stepSpace
+                                                valorDeEspacox1 = 0
+                                                valorDeEspacox2 = 0
+                                            else:
+                                                valorDeEspacoy1 = stepSpace
+                                                valorDeEspacoy2 = -stepSpace
+                                                valorDeEspacox1 = 0
+                                                valorDeEspacox2 = 0
 
-                        #             # IMPLEMENTAR ESSA FUNCAO PARA PEGAR PONTO LOGO ACIMA OU CONTINUO
-                        #             # cfX, cfY, _ = pontoAFrente(pontoColisao[0], pontoColisao[1], finalx, finaly, xt, yt, i, 2)
-                        #             # ESSA FUNCAO N TA FUNCIONANDO, MAS PRECISO DELA NA LINHA 263
-                        #             # miraiPontoX, miraiPontoY = pontoReplanning(finalx, finaly, i, pontoColisao[0]+valorDeEspacox2, pontoColisao[1]+valorDeEspacoy2, direc, a1, b1, pontoX, pontoY)
+                                    # IMPLEMENTAR ESSA FUNCAO PARA PEGAR PONTO LOGO ACIMA OU CONTINUO
+                                    # cfX, cfY, _ = pontoAFrente(pontoColisao[0], pontoColisao[1], finalx, finaly, xt, yt, i, 2)
+                                    # ESSA FUNCAO N TA FUNCIONANDO, MAS PRECISO DELA NA LINHA 263
+                                    # miraiPontoX, miraiPontoY = pontoReplanning(finalx, finaly, i, pontoColisao[0]+valorDeEspacox2, pontoColisao[1]+valorDeEspacoy2, direc, a1, b1, pontoX, pontoY)
                                     
-                        #             # print(pontoColisao[0]+valorDeEspacox2)
-                        #             # print(pontoColisao[0]+valorDeEspacoy2)
-                        #             # print(miraiPontoX)
+                                    # print(pontoColisao[0]+valorDeEspacox2)
+                                    # print(pontoColisao[0]+valorDeEspacoy2)
+                                    # print(miraiPontoX)
 
-                        #             # isso vai dar ruim pq esse +2 deveria ser de acordo com a direcao
-                        #             # o sinal vai ser de acordo com o angulo entre o no atual e miraiPonto
-                        #             # rxx, ryy = replanning(finalx[i], finaly[i], pontoColisao[0]+valorDeEspacox1, pontoColisao[1]+valorDeEspacoy1, pontoColisao[0]+valorDeEspacox2, pontoColisao[1]+valorDeEspacoy2, miraiPontoX, miraiPontoY)#, xt, yt)
-                        #             # DEIXAR ESSE 2 E ESSE 1 DINAMICO
-                        #             rxx, ryy = simulate_points(finalx[i], pontoColisao[0]+2, finaly[i], pontoColisao[1]-1)
+                                    # isso vai dar ruim pq esse +2 deveria ser de acordo com a direcao
+                                    # o sinal vai ser de acordo com o angulo entre o no atual e miraiPonto
+                                    # rxx, ryy = replanning(finalx[i], finaly[i], pontoColisao[0]+valorDeEspacox1, pontoColisao[1]+valorDeEspacoy1, pontoColisao[0]+valorDeEspacox2, pontoColisao[1]+valorDeEspacoy2, miraiPontoX, miraiPontoY)#, xt, yt)
+                                    # DEIXAR ESSE 2 E ESSE 1 DINAMICO
+                                    rxx, ryy = simulate_points(finalx[i], pontoColisao[0]+2, finaly[i], pontoColisao[1]-1)
 
-                        #             # print(pontoColisao[1]+2)
-                        #             pontoX1, pontoY1, i1 = pontoAFrente(rxx[0], ryy[0], rxx, ryy, xt, yt, 0, 1.5)
-                        #             pontoX2, pontoY2, i2 = pontoAFrente(rxx[0], ryy[0], rxx, ryy, xt, yt, 0, 2)
+                                    # print(pontoColisao[1]+2)
+                                    pontoX1, pontoY1, i1 = pontoAFrente(rxx[0], ryy[0], rxx, ryy, xt, yt, 0, 1.5)
+                                    pontoX2, pontoY2, i2 = pontoAFrente(rxx[0], ryy[0], rxx, ryy, xt, yt, 0, 2)
 
-                        #             # suaviza a ENTRADA do replanning
-                        #             xx, yy = newSmooth([finalx[i], finalx[i+10], pontoX1, pontoX2], [finaly[i], finaly[i+10], pontoY1, pontoY2], offset=4)
+                                    # suaviza a ENTRADA do replanning
+                                    xx, yy = newSmooth([finalx[i], finalx[i+10], pontoX1, pontoX2], [finaly[i], finaly[i+10], pontoY1, pontoY2], offset=4)
                                     
-                        #             # suaviza a SAIDA do replanning
-                        #             xxx, yyy = newSmooth([rxx[-2], rxx[-1], 34, xt], [ryy[-2], ryy[-1], 28, yt], offset=4)
+                                    # suaviza a SAIDA do replanning
+                                    xxx, yyy = newSmooth([rxx[-2], rxx[-1], 34, xt], [ryy[-2], ryy[-1], 28, yt], offset=4)
                                     
-                        #             # auxi = max(abs(rxx[:-1][-1] - xt), abs(ryy[:-1][-1] - yt))
-                        #             # a11 = np.linspace(rxx[:-1][-1], xt, int(auxi))
-                        #             # a22 = np.linspace(ryy[:-1][-1], yt, int(auxi))
+                                    # auxi = max(abs(rxx[:-1][-1] - xt), abs(ryy[:-1][-1] - yt))
+                                    # a11 = np.linspace(rxx[:-1][-1], xt, int(auxi))
+                                    # a22 = np.linspace(ryy[:-1][-1], yt, int(auxi))
 
-                        #             finalx = np.concatenate((finalx[:i], xx, rxx[i2:-1], xxx[1:-1], [xt]), axis=0)
-                        #             finaly = np.concatenate((finaly[:i], yy, ryy[i2:-1], yyy[1:-1], [yt]), axis=0)
+                                    finalx = np.concatenate((finalx[:i], xx, rxx[i2:-1], xxx[1:-1], [xt]), axis=0)
+                                    finaly = np.concatenate((finaly[:i], yy, ryy[i2:-1], yyy[1:-1], [yt]), axis=0)
 
-                        #             checkObsD = len(vddIndex)
-                        #             # print("ponto de colisao")
-                        #             # print(str(pontoColisao[0]) + " - " + str(pontoColisao[1]))
-                        #             if not rmv: print("replanning")
+                                    checkObsD = len(vddIndex)
+                                    # print("ponto de colisao")
+                                    # print(str(pontoColisao[0]) + " - " + str(pontoColisao[1]))
+                                    if not rmv: print("replanning")
 
-                        #             N = len(finalx)
-                        #         obsD = 0
-                        #         vObsD["1"] = []
-                        #         vObsD["2"] = []
-                        #     else:
-                        #         if not rmv: print("obstaculo dinamico--------")
-                        #         ang0 = definir_angulo(finalx[i], finaly[i], pontoX, pontoY)
-                        #         for txPoint, tyPoint in zip(tx, ty):
-                        #             ang1 = definir_angulo(finalx[i], finaly[i], txPoint, tyPoint)
-                        #             if dist_euclidiana(finalx[i], finaly[i], txPoint, tyPoint) < distanciaObstaculo and abs(ang0 - ang1) < math.radians(60):
-                        #                 vObsD["1"].append([txPoint, tyPoint])
-                        #         if len(vObsD["1"]) > 0:
-                        #             obsD = 1
+                                    N = len(finalx)
+                                obsD = 0
+                                vObsD["1"] = []
+                                vObsD["2"] = []
+                            else:
+                                if not rmv: print("obstaculo dinamico--------")
+                                ang0 = definir_angulo(finalx[i], finaly[i], pontoX, pontoY)
+                                for txPoint, tyPoint in zip(tx, ty):
+                                    ang1 = definir_angulo(finalx[i], finaly[i], txPoint, tyPoint)
+                                    if dist_euclidiana(finalx[i], finaly[i], txPoint, tyPoint) < distanciaObstaculo and abs(ang0 - ang1) < math.radians(60):
+                                        vObsD["1"].append([txPoint, tyPoint])
+                                if len(vObsD["1"]) > 0:
+                                    obsD = 1
                         
                         
                         

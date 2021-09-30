@@ -1,6 +1,6 @@
 import sys
 from std_srvs.srv import Trigger, SetBool, SetBoolRequest
-from mrs_msgs.srv import Vec4, ReferenceStampedSrv, ReferenceStampedSrvResponse, ReferenceStampedSrvRequest, StringRequest, String, Float64Srv, Float64SrvRequest
+from mrs_msgs.srv import ReferenceStampedSrv, ReferenceStampedSrvResponse, ReferenceStampedSrvRequest, StringRequest, String, Float64Srv, Float64SrvRequest
 from mavros_msgs.srv import CommandBool, CommandBoolRequest, SetMode, SetModeRequest
 import rospy
 import math
@@ -121,7 +121,7 @@ def addRotaPonto(ponto, vx, vy, rotax, rotay, rotaz, rotayaw, vz=3.2, vyaw=0):
     rotayaw.insert(ponto, vyaw)
     return rotax, rotay, rotaz, rotayaw
 
-def dist_euclidianaUAV(v1, v2):
+def dist_euclidiana(v1, v2):
 	dim, soma = len(v1), 0
 	for i in range(dim):
 		soma += math.pow(v1[i] - v2[i], 2)
@@ -141,6 +141,13 @@ def addTag(tag, rotax, rotay, rotaz, rotayaw):
     rotayaw.append(500)
     return rotax, rotay, rotaz, rotayaw
 
+def addTagPonto(ponto, tag, rotax, rotay, rotaz, rotayaw):
+    rotax.insert(ponto, tag)
+    rotay.insert(ponto, 500)
+    rotaz.insert(ponto, 500)
+    rotayaw.insert(ponto, 500)
+    return rotax, rotay, rotaz, rotayaw
+
 def logStateMachine(frase, condicao, extra=None):
     if condicao == 0 and len(frase) > 0: print(frase)
     return 1 if extra == None else 1, 1
@@ -154,7 +161,7 @@ def melhorRota(x, y, posX, posY):
         d = float("inf")
         coord, index = [], 0
         for i in range(len(x)):
-            dist = dist_euclidianaUAV([camFinalX[-1], camFinalY[-1]], [x[i], y[i]])
+            dist = dist_euclidiana([camFinalX[-1], camFinalY[-1]], [x[i], y[i]])
             if dist < d:
                 index = i
                 coord = [x[i], y[i]]
@@ -190,10 +197,12 @@ def land():
     except rospy.ServiceException as e:
         print("Falha na chamada de servico: %s"%e)
 
-def andarGlobal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPosYaw, rotacao=False):
+def andarGlobal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPosYaw, rotacionar=False):
     rospy.wait_for_service("/uav1/control_manager/reference")
-    rand = rotacionar(currentPosX, currentPosY, x, y) if rotacao else currentPosYaw
-
+    if rotacionar:
+        rand = rotacionar(currentPosX, currentPosY, x, y)
+    # rand = 1.57 #rotacionar(currentPosX, currentPosY, x, y)
+    
     try:
         ola = rospy.ServiceProxy("/uav1/control_manager/reference", ReferenceStampedSrv)
         req = ReferenceStampedSrvRequest()
@@ -206,48 +215,7 @@ def andarGlobal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPos
     except rospy.ServiceException as e:
         print("Falha na chamada de servico: %s"%e)
 
-    # print("Estou em: x " + str(currentPosX) + " y " + str(currentPosY) + " z " + str(currentPosZ))
-    # print("Estou indo para: x " + str(x) + " y " + str(y) + " z " + str(z))
-    # print("Tempo: " + str(euclidiana(x, y, z, currentPosX, currentPosY, currentPosZ, currentPosYaw)))
     return euclidiana(x, y, z, currentPosX, currentPosY, currentPosZ, currentPosYaw) 
-
-# def andarGlobal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPosYaw):
-#     rospy.wait_for_service("/uav1/control_manager/goto_fcu")
-#     rand = rotacionar(currentPosX, currentPosY, x, y)
-
-#     try:
-#         ola = rospy.ServiceProxy("/uav1/control_manager/reference", Vec4Srv)
-#         req = Vec4SrvRequest()
-        
-#         req.goal[0] = x - currentPosX 
-#         req.goal[1] = y - currentPosY
-#         req.goal[2] = z - currentPosZ
-#         req.goal[3] = rand - currentPosYaw
-#         resp = ola(req)
-#         # rospy.loginfo(resp)
-#     except rospy.ServiceException as e:
-#         print("Falha na chamada de servico: %s"%e)
-
-#     return euclidiana(x, y, z, currentPosX, currentPosY, currentPosZ, currentPosYaw) * 0.6
-
-# def andarLocal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPosYaw):
-#     rospy.wait_for_service("/uav1/control_manager/goto_fcu")
-#     rand = rotacionar(currentPosX, currentPosY, x, y)
-
-#     try:
-#         ola = rospy.ServiceProxy("/uav1/control_manager/reference", Vec4Srv)
-#         req = Vec4SrvRequest()
-        
-#         req.goal[0] = x 
-#         req.goal[1] = y 
-#         req.goal[2] = z
-#         req.goal[3] = rand
-#         resp = ola(req)
-#         # rospy.loginfo(resp)
-#     except rospy.ServiceException as e:
-#         print("Falha na chamada de servico: %s"%e)
-
-#     return euclidiana(x, y, z, currentPosX, currentPosY, currentPosZ, currentPosYaw) * 0.6
 
 def andarLocal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPosYaw):
     rospy.wait_for_service("/uav1/control_manager/reference")
@@ -264,6 +232,16 @@ def andarLocal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPosY
         print("Falha na chamada de servico: %s"%e)
     
     return euclidiana(x, y, z, currentPosX, currentPosY, currentPosZ, currentPosYaw) * 0.7
+
+def zerarTwist(valorTwist):
+    valorTwist.angular.x = 0
+    valorTwist.angular.y = 0
+    valorTwist.angular.z = 0
+    valorTwist.linear.x = 0
+    valorTwist.linear.y = 0
+    valorTwist.linear.z = 0
+
+    return valorTwist
 
 def criar_reta(x1, y1, x2, y2):
     delta_y = y2 - y1
