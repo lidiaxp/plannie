@@ -1,8 +1,7 @@
 matplotlib==3.1.2
 numpy==1.21.0
 plotly==4.14.3
-pygame==1.9.6
+pygame==2.0.1
 rosdep==0.20.1
-rospy==1.15.9
 Rtree==0.9.7
 scipy==1.6.1

@@ -179,9 +179,9 @@ class Pontos:
         zobs5 = [5] * len(amareloX)
 
         # # # Outros
-        self.xobs = np.concatenate((vermelhoX,vermelhoX,vermelhoX,vermelhoX,vermelhoX,vermelhoX, self.xobs,self.xobs,self.xobs,self.xobs,self.xobs,self.xobs,rosaX,rosaX,rosaX,rosaX,amareloX,amareloX,amareloX,amareloX), axis=0)
-        self.yobs = np.concatenate((vermelhoY,vermelhoY,vermelhoY,vermelhoY,vermelhoY,vermelhoY, self.yobs,self.yobs,self.yobs,self.yobs,self.yobs,self.yobs,rosaY,rosaY,rosaY,rosaY,amareloY,amareloY,amareloY,amareloY), axis=0)
-        self.zobs = np.concatenate((zobs00,zobs11,zobs22,zobs33,zobs44,zobs55, self.zobs,self.zobs1,self.zobs2,self.zobs3,self.zobs4,self.zobs5,zobs0,zobs1,zobs2,zobs3,zobs222,zobs333,zobs444,zobs555), axis=0)
+        self.xobs = np.concatenate((vermelhoX,vermelhoX,vermelhoX,vermelhoX,vermelhoX,vermelhoX, self.xobs,self.xobs,self.xobs,self.xobs,self.xobs,self.xobs,rosaX,rosaX,rosaX,rosaX,amareloX), axis=0)
+        self.yobs = np.concatenate((vermelhoY,vermelhoY,vermelhoY,vermelhoY,vermelhoY,vermelhoY, self.yobs,self.yobs,self.yobs,self.yobs,self.yobs,self.yobs,rosaY,rosaY,rosaY,rosaY,amareloY), axis=0)
+        self.zobs = np.concatenate((zobs00,zobs11,zobs22,zobs33,zobs44,zobs55, self.zobs,self.zobs1,self.zobs2,self.zobs3,self.zobs4,self.zobs5,zobs0,zobs1,zobs2,zobs3,zobs222), axis=0)
         
         
         self.capaX = self.xobs

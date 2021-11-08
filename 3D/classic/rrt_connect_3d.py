@@ -54,13 +54,13 @@ def run(show=False, vmx=[None], vmy=None, vmz=None, startx=None, starty=None, st
     X = SearchSpace(X_dimensions, Obstacles)
 
 
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.set_xlim(0,30)
-    ax.set_ylim(0,30)
-    ax.set_zlim(0,5)
-    ax.plot3D(p.xobs,p.yobs,p.zobs, ".k")
-    plt.show()
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111, projection='3d')
+    # ax.set_xlim(0,p.limiar[0]+1)
+    # ax.set_ylim(0,p.limiar[1]+1)
+    # ax.set_zlim(0,5)
+    # ax.plot3D(p.xobs,p.yobs,p.zobs, ".k")
+    # plt.show()
     
     # # create rrt_search
     # print(x_init)
@@ -86,17 +86,19 @@ def run(show=False, vmx=[None], vmy=None, vmz=None, startx=None, starty=None, st
     xxx1, yyy1, zzz1 = tirarRepertido3D(xxx1, yyy1, zzz1)
     xx, yy, zz = generate_curve(xxx1, yyy1, zzz1)
 
-    if show:
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.plot3D(x,y,z, "-r")
-        ax.plot3D(xxx1,yyy1,zzz1, "-y")
-        ax.set_xlim(0,20)
-        ax.set_ylim(0,20)
-        ax.set_zlim(0,5)
-        ax.plot3D(p.xobs,p.yobs,p.zobs, ".k")
-        ax.plot3D(xx,yy,zz, "-b")
-        plt.show()
+    zz = np.clip(zz, 0.5, float("inf"))
+
+    # if show:
+    #     fig = plt.figure()
+    #     ax = fig.add_subplot(111, projection='3d')
+    #     ax.plot3D(x,y,z, "-r")
+    #     ax.plot3D(xxx1,yyy1,zzz1, "-y")
+    #     ax.set_xlim(0,p.limiar[0]+1)
+    #     ax.set_ylim(0,p.limiar[1]+1)
+    #     ax.set_zlim(0,5)
+    #     ax.plot3D(p.xobs,p.yobs,p.zobs, ".k")
+    #     ax.plot3D(xx,yy,zz, "-b")
+    #     plt.show()
 
     distance = distancia_rota3D(xx, yy, zz)
 

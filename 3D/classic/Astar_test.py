@@ -115,14 +115,25 @@ def run(show=0, vmx=None, vmy=None, vmz=None, startx=None, starty=None, startz=N
         a, b, c = pseudox[1:], pseudoy[1:], pseudoz[1:]
     a, b, c = diminuir_pontos3D(a, b, c, p.xobs, p.yobs, p.zobs, apf=False)
     a, b, c = tirarRepertido3D(a, b, c)
-    a, b, c = generate_curve(a, b, c)
-    
+    try:
+        
+
+        a, b, c = generate_curve(a, b, c)
+    except:
+        try:
+            a.insert(2, a[1]+(a[2] - a[1])/5)
+            b.insert(2, b[1]+(a[2] - a[1])/5)
+            c.insert(2, c[1]+(a[2] - a[1])/5)
+            a, b, c = generate_curve(a, b, c)
+        except:
+            print("Nao suavizou a curva")
+
     if show:
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
         ax.plot3D(a,b,c, "-r")
         ax.set_xlim(0,21)
-        ax.set_ylim(0,21)
+        ax.set_ylim(0,11)
         ax.set_zlim(0,5)
         ax.plot3D(p.xobs,p.yobs,p.zobs, ".k")
         plt.show()

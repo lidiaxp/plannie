@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from classic import rrt_connect_3d, Astar_test, rrt3D
 from metaHeuristic import pso
-from machineLearning import rl#, gworl#, deeprl
-import rlpso3D
+from machineLearning import rl
 
 from helper.unknown3D import run
 from helper.utils import memory_usage, diminuir_pontos
@@ -171,8 +170,8 @@ if __name__ == "__main__":
             # ax.rcParams.update({'font.size': 20})
             ax.plot3D(p.xobs, p.yobs, p.zobs, 'k.') 
             ax.plot3D(mx, my, mz, '-r') 
-            ax.set_xlim(0,21) 
-            ax.set_ylim(0,24) 
+            ax.set_xlim(0,p.limiar[0]+1) 
+            ax.set_ylim(0,p.limiar[1]+1) 
             ax.set_zlim(0,6) 
             ax.set_xlabel("x (m)")
             ax.set_ylabel("y (m)")

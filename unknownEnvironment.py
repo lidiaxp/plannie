@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from classic import biastar, biAPF, probabilistic_roadmap, rrt, birrt, a_star
-from metaHeuristic import aco, pso, gwo, gso
-from machineLearning import rl#, gworl#, deeprl
+from metaHeuristic import pso, gwo, gso
+from machineLearning import rl
 
 from helper.unknown import run
 from helper.ambiente import Pontos
