@@ -35,7 +35,7 @@ The path planning algorithms avaiable are:
 ## Running Tests
 
 ```diff
-- Please, read Mode of Use Section before running tests.
+- Please, read Mode of Use Section before running tests
 ```
 
 Note: This planner is based in MRS, to change is just need switch controller (explained below) and change the subscribers topics.
