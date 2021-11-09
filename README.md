@@ -34,7 +34,11 @@ The path planning algorithms avaiable are:
 
 ## Running Tests
 
-Please, read Mode of use Section before running tests. Note: This planner is based in MRS, to change is just need switch controller (explained below) and change the subscribers topics.
+```diff
+- Please, read Mode of use Section before running tests.
+```
+
+Note: This planner is based in MRS, to change is just need switch controller (explained below) and change the subscribers topics.
 
 The environment is defined in helper/ambiente.py to 2D environments and in 3D/helper/ambiente.py to 3D environmets.
 
