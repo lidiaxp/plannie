@@ -38,32 +38,32 @@ Please, read Mode of use Section before running tests. Note: This planner is bas
 
 The environment is defined in helper/ambiente.py to 2D environments and in 3D/helper/ambiente.py to 3D environmets.
 
-- To run 2D tests in Python:
+#### To run 2D tests in Python:
 
 ```bash
   python3 unknownEnvironment.py
 ```
 
-- To run 2D tests in simulator and real environments:
+#### To run 2D tests in simulator and real environments:
 
 ```bash
   python3 movimentoROS.py
 ```
 
-If use unknown environments (the default uses rplidar)) run this code before:
+If use unknown environments (the default uses rplidar) run this code before:
 
 ```bash
   python3 helper/rplidar.py
 ```
 
-- To run 3D tests in Python:
+#### To run 3D tests in Python:
 
 ```bash
   cd 3D
   python3 unknownEnvironment3D.py
 ```
 
-- To run 3D tests in simulator and real environments:
+#### To run 3D tests in simulator and real environments:
 
 ```bash
   cd 3D
