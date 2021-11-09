@@ -84,6 +84,8 @@ class globalPlanner:
         self.cpu = {"inicial": 0, "final": 0}
         self.zero = {"rtkx": 0, "rtky": 0, "rtkz": 0}
         self.variaveisLog = {"tt": []}
+        self.knownEnvironment = 0
+        self.controller = 1 # Use 1 to MPC and 0 to cmd_vel
 
         # Trajectory
         self.rotas = {}
@@ -618,37 +620,42 @@ class globalPlanner:
 
     def callbackBuildMap3D(self, data):
         if self.velodyne:
-            gen = point_cloud2.read_points(data, skip_nans=True)
-            int_data = list(gen)
+            if not self.knownEnvironment: 
+                gen = point_cloud2.read_points(data, skip_nans=True)
+                int_data = list(gen)
 
-            self.newA, self.newB, self.newC = [], [], []
+                self.newA, self.newB, self.newC = [], [], []
 
-            for x in int_data:
-                if round(x[2] > 0):
-                    self.newA.append(round(x[0]))
-                    self.newB.append(round(-x[1]))
-                    self.newC.append(round(x[2]))
+                for x in int_data:
+                    if round(x[2] > 0):
+                        self.newA.append(round(x[0]))
+                        self.newB.append(round(-x[1]))
+                        self.newC.append(round(x[2]))
 
-            pl = self.rotationMatrix(-math.pi/4, self.newA, self.newB, self.newC)
+                pl = self.rotationMatrix(-math.pi/4, self.newA, self.newB, self.newC)
 
-            self.newA, self.newB, self.newC = [], [], []
+                self.newA, self.newB, self.newC = [], [], []
 
-            # print("Virar para: " + str(math.degrees(self.rand)))
-            # print("Angulo superior: " + str(math.degrees(randSup)))
-            # print("Angulo inferior: " + str(math.degrees(randInf)))
+                # print("Virar para: " + str(math.degrees(self.rand)))
+                # print("Angulo superior: " + str(math.degrees(randSup)))
+                # print("Angulo inferior: " + str(math.degrees(randInf)))
 
-            for i1, i2, i3 in zip(pl[0], pl[1], pl[2]):
-                dentroRange = 1
+                for i1, i2, i3 in zip(pl[0], pl[1], pl[2]):
+                    dentroRange = 1
 
-                if dentroRange:
-                    if [round(i1), round(i2), round(i3)] not in self.abc and round(i2)>1:
-                        self.newA.append(round(i2+3))
-                        self.newB.append(round(i1+3))
-                        self.newC.append(round(i3+1))
-                        self.a.append(round(i2+3))
-                        self.b.append(round(i1+3))
-                        self.c.append(round(i3+1))
-                        self.abc.append([round(i1), round(i2), round(i3)])
+                    if dentroRange:
+                        if [round(i1), round(i2), round(i3)] not in self.abc and round(i2)>1:
+                            self.newA.append(round(i2+3))
+                            self.newB.append(round(i1+3))
+                            self.newC.append(round(i3+1))
+                            self.a.append(round(i2+3))
+                            self.b.append(round(i1+3))
+                            self.c.append(round(i3+1))
+                            self.abc.append([round(i1), round(i2), round(i3)])
+            else:
+                self.a = self.p.xobs
+                self.b = self.p.xobs
+                self.c = self.p.xobs
 
             if self.unic["definirRota"] == 0:
                 print("Iniciando a definir rota")
@@ -848,7 +855,7 @@ class globalPlanner:
                         self.rand = rotacionar(self.currentPosX, self.currentPosY, self.rotas["x"][self.pos], self.rotas["y"][self.pos])
                         self.unic["print"], self.unic["andar"] = logStateMachine("Walking", self.unic["print"], self.unic["andar"])
                         acrZ = 0#-0.6 if self.rotas["z"][self.pos-1] > self.rotas["z"][self.pos] else 0.8
-                        self.tempo["wait"] = andarGlobal(self.rotas["x"][self.pos], self.rotas["y"][self.pos], self.rotas["z"][self.pos] + acrZ, self.rotas["yaw"][self.pos], self.currentPosX, self.currentPosY, self.currentPosZ, self.currentPosYaw, rotacao=False)
+                        self.tempo["wait"] = andarGlobal(self.rotas["x"][self.pos], self.rotas["y"][self.pos], self.rotas["z"][self.pos] + acrZ, self.rotas["yaw"][self.pos], self.currentPosX, self.currentPosY, self.currentPosZ, self.currentPosYaw, rotacao=False, MPC=self.controller)
                         self.velodyne = 1
                 except:
                     pass

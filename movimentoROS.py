@@ -53,6 +53,8 @@ class globalPlanner:
         self.variaveisLog = {"tt": []}
         self.memoria = {"inicial": 0, "final": 0}
         self.cpu = {"inicial": 0, "final": 0}
+        self.knownEnvironment = 0
+        self.controller = 1 # Use 1 to MPC and 0 to cmd_vel
 
         # Trajectory
         self.rotas = {}
@@ -187,13 +189,18 @@ class globalPlanner:
 
     # ---------------------------- Altura Laser ----------------------------------
     def callbackBuildMap(self, obs):
-        buildMapX, buildMapY = [], []
-        for value in obs.poses:
-            buildMapX.append(value.position.x)
-            buildMapY.append(value.position.y)
+        if not self.knownEnvironment: 
+            buildMapX, buildMapY = [], []
+            for value in obs.poses:
+                buildMapX.append(value.position.x)
+                buildMapY.append(value.position.y)
 
-        # a,b = com capa | a1,b1 = sem capa
-        self.a, self.b, _, _, self.a1b1 =  laserROS(buildMapX, buildMapY, self.a, self.b, self.a1b1, tamCapa=0)
+            # a,b = com capa | a1,b1 = sem capa
+            self.a, self.b, _, _, self.a1b1 =  laserROS(buildMapX, buildMapY, self.a, self.b, self.a1b1, tamCapa=0)
+        else:
+            self.a = self.p.xobs
+            self.b = self.p.xobs
+            self.c = self.p.xobs
         
         if self.unic["definirRota"] == 0:
             _, t, rx, ry = alg.run(show=0, vmx=self.a, vmy=self.b, startx=self.currentPosX, starty=self.currentPosY, p1=self.p)
@@ -348,7 +355,7 @@ class globalPlanner:
                     print("Indo para")
                     print(str(self.rotas["x"][self.pos]) + " - " + str(self.rotas["y"][self.pos]) + " - " + str(self.rotas["z"][self.pos]))
                     self.unic["print"], self.unic["andar"] = logStateMachine("Walking", self.unic["print"], self.unic["andar"])
-                    self.tempo["wait"] = andarGlobal(self.rotas["x"][self.pos], self.rotas["y"][self.pos], self.rotas["z"][self.pos], self.rotas["yaw"][self.pos], self.currentPosX, self.currentPosY, self.currentPosZ, self.currentPosYaw)
+                    self.tempo["wait"] = andarGlobal(self.rotas["x"][self.pos], self.rotas["y"][self.pos], self.rotas["z"][self.pos], self.rotas["yaw"][self.pos], self.currentPosX, self.currentPosY, self.currentPosZ, self.currentPosYaw, MPC=self.controller)
 
                 if self.unic["SM"] == 1:
                     self.counts["tempo"] = time()

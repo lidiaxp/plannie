@@ -34,28 +34,36 @@ The path planning algorithms avaiable are:
 
 ## Running Tests
 
+Please, read Mode of use Section before running tests. Note: This planner is based in MRS, to change is just need switch controller (explained below) and change the subscribers topics.
+
 The environment is defined in helper/ambiente.py to 2D environments and in 3D/helper/ambiente.py to 3D environmets.
 
-To run 2D tests in Python:
+- To run 2D tests in Python:
 
 ```bash
   python3 unknownEnvironment.py
 ```
 
-To run 2D tests in simulator and real environments:
+- To run 2D tests in simulator and real environments:
 
 ```bash
   python3 movimentoROS.py
 ```
 
-To run 3D tests in Python:
+If use unknown environments (the default uses rplidar)) run this code before:
+
+```bash
+  python3 helper/rplidar.py
+```
+
+- To run 3D tests in Python:
 
 ```bash
   cd 3D
   python3 unknownEnvironment3D.py
 ```
 
-To run 3D tests in simulator and real environments:
+- To run 3D tests in simulator and real environments:
 
 ```bash
   cd 3D
@@ -66,15 +74,17 @@ To run 3D tests in simulator and real environments:
 
 In the movimentoROS* codes: 
 
-- It is possible choose the path planning technique in the imports, the strucutre is similar to these model and can be change to any path planning algorithm present in the plannie. 
-- You can add other variables similar to this to use different algorithms to initial planning and when discover new obstacles. The technique used in this cases are defined in callbackStatic (when discover new environments) and callbackBuildMap (initial planning).
-- The dynamic path planning are disabled to simulator, but if you need use just modify the callbackDynamic
+- Any environment can be used to run in Gazebo, but is needed that your environement is opened before run Plannie. In Plannie, the control is defined in ```andarGlobal``` function at ```utilsUav``` file. By default, the controller is MPC used by MRS, to work with ```/cmd_vel``` change the variable ```self.controller``` to 0 (1: MPC in MRS | 0: cmd_vel);
+- To change between known e unknown environment change the variable ```self.knownEnvironment```. Note: If use known environment is needed configure the environment, as shown in Section ```Change Environment``` below. If use unknown environment is import define start and goal node, as described in the Section below. Note2: By default the mapping is made with velodyne in 3D environment and rplidar in 2D environment;
+- It is possible choose the path planning technique in the imports, the strucutre is similar to these model and can be change to any path planning algorithm present in the plannie;
+- You can add other variables similar to this to use different algorithms to initial planning and when discover new obstacles. The technique used in this cases are defined in callbackStatic (when discover new environments) and callbackBuildMap (initial planning);
+- The dynamic path planning are disabled to simulator, but if you need use just modify the callbackDynamic.
 
 In the unknownEnvironment* codes:
 
-- There are a list of algorithms avaiable at the start (next to line 25), just turn the variable true to use the technique.
-- In this case, by default, is not possible use different algorithms to initial planning and when discover new obstacles. However, it is possible import the technique in helper/unknown.py and define the best technique to each planning. The initial planning is defined in alg.run next to line 96, and the planning when discover new obstacles is defined in alg.run nexto to line 326.
-- Define dynamic obstacles in helper/unknown.py in the variables obs* (next to line 22).
+- There are a list of algorithms avaiable at the start (next to line 25), just turn the variable true to use the technique;
+- In this case, by default, is not possible use different algorithms to initial planning and when discover new obstacles. However, it is possible import the technique in helper/unknown.py and define the best technique to each planning. The initial planning is defined in alg.run next to line 96, and the planning when discover new obstacles is defined in alg.run nexto to line 326;
+- Define dynamic obstacles in helper/unknown.py in the variables obs* (next to line 22);
 - The algorithm to be used in dynamic path planning is defined with the function newSmooth nexto to line 276 and 279. This function uses Pedestrian Avoidance Method, if you need use Riemannian Motion Policies, import it at start and switch this function.
 
 If you will carry out flights in real environment, have several scripts to support use the sensors in the folder _helper_.

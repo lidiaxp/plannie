@@ -6,6 +6,7 @@ import rospy
 import math
 from dynamic_reconfigure.srv import ReconfigureRequest, Reconfigure
 from dynamic_reconfigure.parameter_generator import *
+from geometry_msgs.msg import Twist
 
 # from gazebo_ros_link_attacher.srv import Attach, AttachRequest, AttachResponse
 from gazebo_msgs.srv import GetModelState
@@ -197,25 +198,28 @@ def land():
     except rospy.ServiceException as e:
         print("Falha na chamada de servico: %s"%e)
 
-def andarGlobal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPosYaw, rotacionar=False):
-    rospy.wait_for_service("/uav1/control_manager/reference")
-    if rotacionar:
-        rand = rotacionar(currentPosX, currentPosY, x, y)
-    # rand = 1.57 #rotacionar(currentPosX, currentPosY, x, y)
-    
-    try:
-        ola = rospy.ServiceProxy("/uav1/control_manager/reference", ReferenceStampedSrv)
-        req = ReferenceStampedSrvRequest()
-        req.reference.position.x = x 
-        req.reference.position.y = y 
-        req.reference.position.z = z
-        req.reference.heading = rand
-        resp = ola(req)
-        # rospy.loginfo(resp)
-    except rospy.ServiceException as e:
-        print("Falha na chamada de servico: %s"%e)
+def andarGlobal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPosYaw, vel=0.5, rotacionar=False, MPC=1):
+    if MPC:
+        rospy.wait_for_service("/uav1/control_manager/reference")
+        if rotacionar:
+            rand = rotacionar(currentPosX, currentPosY, x, y)
+        # rand = 1.57 #rotacionar(currentPosX, currentPosY, x, y)
+        
+        try:
+            ola = rospy.ServiceProxy("/uav1/control_manager/reference", ReferenceStampedSrv)
+            req = ReferenceStampedSrvRequest()
+            req.reference.position.x = x 
+            req.reference.position.y = y 
+            req.reference.position.z = z
+            req.reference.heading = rand
+            resp = ola(req)
+            # rospy.loginfo(resp)
+        except rospy.ServiceException as e:
+            print("Falha na chamada de servico: %s"%e)
 
-    return euclidiana(x, y, z, currentPosX, currentPosY, currentPosZ, currentPosYaw) 
+        return euclidiana(x, y, z, currentPosX, currentPosY, currentPosZ, currentPosYaw) 
+    else:
+        control_cmd(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPosYaw)
 
 def andarLocal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPosYaw):
     rospy.wait_for_service("/uav1/control_manager/reference")
@@ -339,3 +343,10 @@ def velocity(x_goal, y_goal, z_goal, currentX, currentY, currentZ, vel=0.5):
         percent2 = z / y
         # print("Z")
         return vel/percent1*sinalX, vel/percent2*sinalY, vel*sinalZ
+
+def control_cmd(x_goal, y_goal, z_goal, yaw_goal, currentX, currentY, currentZ, currentYaw, vel=0.5, topicPub="/cmd_vel"):
+    cmd_vel = rospy.Publisher(topicPub, Twist, queue_size=1)
+    t_msg = Twist()
+    t_msg.linear.x, b, c = velocity(x_goal, y_goal, z_goal, currentX, currentY, currentZ, vel=0.5)
+
+    cmd_vel.publish(t_msg)
