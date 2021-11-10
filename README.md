@@ -60,6 +60,8 @@ If use unknown environments (the default uses rplidar) run this code before, in 
   python3 helper/rplidar.py
 ```
 
+Else, is needed change the variable ```self.knownEnvironment``` from 0 to 1, and follow the instructions in Mode of Use to configure the environment.
+
 #### To run 3D tests in Python:
 
 ```bash
@@ -73,6 +75,8 @@ If use unknown environments (the default uses rplidar) run this code before, in 
   cd 3D
   python3 movimentoROS3D.py
 ```
+
+If you will use known environments, is needed change the variable ```self.knownEnvironment``` from 0 to 1, and follow the instructions in Mode of Use to configure the environment.
 
 ## Mode of Use
 

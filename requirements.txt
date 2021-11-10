@@ -1,3 +1,4 @@
+haversine==2.3.0
 matplotlib==3.1.2
 numpy==1.21.0
 plotly==4.14.3
