@@ -108,6 +108,17 @@ class globalPlanner:
 
         # decolagemInicial()
         print("Espere um momento, ja iremos comecar")
+
+        if self.knownEnvironment:
+            _, t, rx, ry = alg.run(show=0, vmx=self.a, vmy=self.b, startx=self.currentPosX, starty=self.currentPosY, p1=self.p)
+            rx, ry = rotaToGazebo(rx, ry, self.a, self.b, self.distNodes)
+            self.rotas["x"] = rx
+            self.rotas["y"] = ry
+            self.rotas["z"] = [self.altura] * len(rx)
+            self.rotas["yaw"] = [0] * len(rx)
+            print("rota definida")
+            self.unic["definirRota"] = 1
+            
         rospy.sleep(5)
         self.unic["SM"] = 1
         self.memoria["inicial"] = memory_usage()
