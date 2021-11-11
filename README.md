@@ -54,7 +54,7 @@ The environment is defined in helper/ambiente.py to 2D environments and in 3D/he
   python3 movimentoROS.py
 ```
 
-If use unknown environments (the default uses rplidar) run this code before, in other terminal:
+If use unknown environments (the default uses rplidar) run this code before, each in different terminal:
 
 ```bash
   roslaunch obstacle_detector rplidar_mrs.launch
