@@ -9,6 +9,7 @@ Plannie is a framework to path planning in Python, simulated environments, and f
 The project can be installed in any directory on the computer with the following commands: 
 
 ```bash
+  git clone https://github.com/tysik/obstacle_detector
   git clone https://github.com/lidiaxp/plannie.git
   pip install -r requirements.txt
 ```
