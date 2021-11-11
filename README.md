@@ -9,7 +9,6 @@ Plannie is a framework to path planning in Python, simulated environments, and f
 The project can be installed in any directory on the computer with the following commands: 
 
 ```bash
-  git clone https://github.com/tysik/obstacle_detector
   git clone https://github.com/lidiaxp/plannie.git
   pip install -r requirements.txt
 ```
@@ -84,7 +83,8 @@ If you will use known environments, is needed change the variable ```self.knownE
 In the movimentoROS* codes: 
 
 - Any environment can be used to run in Gazebo, but is needed that your environement is opened before run Plannie. In Plannie, the control is defined in ```andarGlobal``` function at ```utilsUav``` file. By default, the controller is MPC used by MRS, to work with ```/cmd_vel``` change the variable ```self.controller``` to 0 (1: MPC in MRS | 0: cmd_vel);
-- To change between known e unknown environment change the variable ```self.knownEnvironment```. Note: If use known environment is needed configure the environment, as shown in Section ```Change Environment``` below. If use unknown environment is import define start and goal node, as described in the Section below. Note2: By default the mapping is made with velodyne in 3D environment and rplidar in 2D environment;
+- To change between known e unknown environment change the variable ```self.knownEnvironment```. *Note*: If use known environment is needed configure the environment, as shown in Section ```Change Environment``` below. If use unknown environment is import define start and goal node, as described in the Section below. *Note2*: By default the mapping is made with velodyne in 3D environment and rplidar in 2D environment;
+- To use rplidar is needed install [this package](https://github.com/tysik/obstacle_detector) on your ROS workspace;
 - It is possible choose the path planning technique in the imports, the strucutre is similar to these model and can be change to any path planning algorithm present in the plannie;
 - You can add other variables similar to this to use different algorithms to initial planning and when discover new obstacles. The technique used in this cases are defined in callbackStatic (when discover new environments) and callbackBuildMap (initial planning);
 - The dynamic path planning are disabled to simulator, but if you need use just modify the callbackDynamic.
