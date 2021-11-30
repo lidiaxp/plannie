@@ -164,7 +164,7 @@ class globalPlanner:
         self.unic["SM"] = 1
         self.memoria["inicial"] = memory_usage()
         self.cpu["inicial"] = psutil.cpu_percent()
-        set_vio()
+        # set_vio()
 
     # ---------------------------- Loop :3 ----------------------------------
     def callbackMain(self, odom):
@@ -338,15 +338,15 @@ class globalPlanner:
                     print(self.rotas["y"])
                     print(self.rotas["z"])
                     self.avoidStatic = self.pos
-                    ax = plt.axes(projection = "3d")
-                    ax.plot3D(self.a, self.b, self.c, 'k.') 
-                    ax.plot3D(self.rotas["x"], self.rotas["y"], self.rotas["z"], 'y.') 
-                    ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
-                    ax.set_xlim(0,20) 
-                    ax.set_ylim(0,10) 
-                    ax.set_zlim(0,6) 
-                    plt.pause(0.01)
-                    plt.show()
+                    # ax = plt.axes(projection = "3d")
+                    # ax.plot3D(self.a, self.b, self.c, 'k.') 
+                    # ax.plot3D(self.rotas["x"], self.rotas["y"], self.rotas["z"], 'y.') 
+                    # ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
+                    # ax.set_xlim(0,20) 
+                    # ax.set_ylim(0,10) 
+                    # ax.set_zlim(0,6) 
+                    # plt.pause(0.01)
+                    # plt.show()
                 # else:
                 #     print("not")
 
@@ -414,13 +414,13 @@ class globalPlanner:
                 self.rotas["yaw"] = np.array([self.anguloGeral] * len(rx))
                 print("rota definida")
                 self.variaveisLog["tt"].append(t)
-                ax = plt.axes(projection = "3d")
-                ax.plot3D(self.a, self.b, self.c, 'k.') 
-                ax.plot3D(self.rotas["x"], self.rotas["y"], self.rotas["z"], 'y.') 
-                ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
-                ax.set_zlim(0,4) 
-                plt.pause(0.01)
-                plt.show()
+                # ax = plt.axes(projection = "3d")
+                # ax.plot3D(self.a, self.b, self.c, 'k.') 
+                # ax.plot3D(self.rotas["x"], self.rotas["y"], self.rotas["z"], 'y.') 
+                # ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
+                # ax.set_zlim(0,4) 
+                # plt.pause(0.01)
+                # plt.show()
                 self.unic["definirRota"] = 1
 
             self.velodyne = 0
@@ -453,16 +453,16 @@ class globalPlanner:
                     self.c.append(round(i3+1))
                     self.abc.append([round(i1), round(i2), round(i3)])
 
-            if self.currentPosX > 15 and self.currentPosY > 12 and self.currentPosZ > 1 and self.currentPosX < 20 and self.currentPosY < 15:
-                ax = plt.axes(projection = "3d")
-                ax.plot3D(self.a, self.b, self.c, 'k.') 
-                ax.plot3D(self.rotas["x"], self.rotas["y"], self.rotas["z"], 'y.') 
-                ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
-                ax.set_xlim(-10,100) 
-                ax.set_ylim(-10,100) 
-                ax.set_zlim(0,4) 
-                plt.pause(0.01)
-                plt.show()
+            # if self.currentPosX > 15 and self.currentPosY > 12 and self.currentPosZ > 1 and self.currentPosX < 20 and self.currentPosY < 15:
+            #     ax = plt.axes(projection = "3d")
+            #     ax.plot3D(self.a, self.b, self.c, 'k.') 
+            #     ax.plot3D(self.rotas["x"], self.rotas["y"], self.rotas["z"], 'y.') 
+            #     ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
+            #     ax.set_xlim(-10,100) 
+            #     ax.set_ylim(-10,100) 
+            #     ax.set_zlim(0,4) 
+            #     plt.pause(0.01)
+            #     plt.show()
 
             self.velodyne = 0
 
@@ -552,17 +552,17 @@ class globalPlanner:
                 self.abc.append([round(i1), round(i2), round(i3)])
 
         # if self.currentPosX > 15 and self.currentPosY > 12 and self.currentPosZ > 1 and self.currentPosX < 20 and self.currentPosY < 15:
-        print(time() - self.contadorTotal)
-        if 400 > time() - self.contadorTotal > 20:
-                ax = plt.axes(projection = "3d")
-                ax.plot3D(self.a, self.b, self.c, 'k.') 
-                ax.plot3D(self.rotas["x"], self.rotas["y"], self.rotas["z"], 'y.') 
-                ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
-                ax.set_xlim(0,20) 
-                ax.set_ylim(0,10) 
-                ax.set_zlim(0,4) 
-                plt.pause(0.01)
-                plt.show()
+        # print(time() - self.contadorTotal)
+        # if 400 > time() - self.contadorTotal > 20:
+        #         ax = plt.axes(projection = "3d")
+        #         ax.plot3D(self.a, self.b, self.c, 'k.') 
+        #         ax.plot3D(self.rotas["x"], self.rotas["y"], self.rotas["z"], 'y.') 
+        #         ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
+        #         ax.set_xlim(0,20) 
+        #         ax.set_ylim(0,10) 
+        #         ax.set_zlim(0,4) 
+        #         plt.pause(0.01)
+        #         plt.show()
 
     def callbackBuildMapZed3D(self, data):
         gen = point_cloud2.read_points(data, skip_nans=True)
@@ -627,12 +627,15 @@ class globalPlanner:
                 self.newA, self.newB, self.newC = [], [], []
 
                 for x in int_data:
-                    if round(x[2] > 0):
+                    if round(x[2] >= 0):
                         self.newA.append(round(x[0]))
-                        self.newB.append(round(-x[1]))
+                        self.newB.append(round(x[1]))
                         self.newC.append(round(x[2]))
+                        # self.newA.append(x[0])
+                        # self.newB.append(x[1])
+                        # self.newC.append(x[2])
 
-                pl = self.rotationMatrix(-math.pi/4, self.newA, self.newB, self.newC)
+                pl = self.rotationMatrix(self.currentPosYaw, self.newA, self.newB, self.newC)
 
                 self.newA, self.newB, self.newC = [], [], []
 
@@ -665,15 +668,18 @@ class globalPlanner:
                 self.rotas["y"] = np.array(ry)
                 self.rotas["z"] = np.array(rz) # [self.altura] * len(rx)
                 self.rotas["yaw"] = np.array([self.anguloGeral] * len(rx))
-                ax = plt.axes(projection = "3d")
-                ax.plot3D(self.a, self.b, self.c, 'k.') 
-                ax.plot3D(self.rotas["x"], self.rotas["y"], self.rotas["z"], 'y.') 
-                ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
-                ax.set_xlim(0,20) 
-                ax.set_ylim(0,10) 
-                ax.set_zlim(0,6) 
-                plt.pause(0.01)
-                plt.show()
+                # print(self.a)
+                # print(self.b)
+                # print(self.c)
+                # ax = plt.axes(projection = "3d")
+                # ax.plot3D(self.a, self.b, self.c, 'k.') 
+                # ax.plot3D(self.rotas["x"], self.rotas["y"], self.rotas["z"], 'y.') 
+                # ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
+                # ax.set_xlim(0,20) 
+                # ax.set_ylim(0,10) 
+                # ax.set_zlim(0,6) 
+                # plt.pause(0.01)
+                # plt.show()
                 print("rota definida")                              
                 self.unic["definirRota"] = 1
 
@@ -694,24 +700,24 @@ class globalPlanner:
                 self.c.append(v3)
          
         print(time() - self.counts["total"])
-        if round(time() - self.counts["total"])%1==0 and 24 > time() - self.counts["total"] > 15:
-            fig = plt.figure()
-            ax = fig.add_subplot(111, projection='3d')
-            zz = [2] * len(self.xx)
-            ax.plot3D(self.xx, self.yy, zz, ".g")
-            ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
-            ax.plot3D(self.a, self.b, self.c,".k")
-            ax.plot3D(buildMapX, buildMapY, buildMapZ,".y")
-            ax.set_title(self.currentPosYaw)
-            ax.set_xlabel("x (m)" + str(self.currentPosX))
-            ax.set_ylabel("y (m)" + str(self.currentPosY))
-            ax.set_zlabel("z (m)" + str(self.currentPosZ))
-            ax.set_xlim(-50, 100)
-            ax.set_ylim(-50, 100)
-            ax.set_zlim(-3, 7)
-            ax.view_init(73, -159)
-            self.contador += 1
-            plt.show()
+        # if round(time() - self.counts["total"])%1==0 and 24 > time() - self.counts["total"] > 15:
+        #     fig = plt.figure()
+        #     ax = fig.add_subplot(111, projection='3d')
+        #     zz = [2] * len(self.xx)
+        #     ax.plot3D(self.xx, self.yy, zz, ".g")
+        #     ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
+        #     ax.plot3D(self.a, self.b, self.c,".k")
+        #     ax.plot3D(buildMapX, buildMapY, buildMapZ,".y")
+        #     ax.set_title(self.currentPosYaw)
+        #     ax.set_xlabel("x (m)" + str(self.currentPosX))
+        #     ax.set_ylabel("y (m)" + str(self.currentPosY))
+        #     ax.set_zlabel("z (m)" + str(self.currentPosZ))
+        #     ax.set_xlim(-50, 100)
+        #     ax.set_ylim(-50, 100)
+        #     ax.set_zlim(-3, 7)
+        #     ax.view_init(73, -159)
+        #     self.contador += 1
+        #     plt.show()
 
     # ---------------------------- Onde o UAV ta ----------------------------------
     def callbackPosicao(self, odom):
