@@ -47,7 +47,7 @@
     <remap from="/scan" to="/uav1/rplidar/scan"/>
   </node>
 
-  <node name="rviz" pkg="rviz" type="rviz" output="screen" args="-d $(find obstacle_detector)/resources/rplidar_mrs.rviz"/>
+  <!-- <node name="rviz" pkg="rviz" type="rviz" output="screen" args="-d $(find obstacle_detector)/resources/rplidar_mrs.rviz"/> -->
 
   <!-- <node name="obstacle_tracker" pkg="obstacle_detector" type="obstacle_tracker_node">
     <param name="active"                  value="false"/>

@@ -59,9 +59,6 @@ class globalPlanner:
         # Trajectory
         self.rotas = {}
         self.rotas["x"], self.rotas["y"], self.rotas["z"], self.rotas["yaw"] = [], [], [], []
-        # self.rotas["x"], self.rotas["y"] = rotaToGazebo2(self.rotas["x"], self.rotas["y"])
-        # self.rotas["z"] = [self.altura] * len(self.rotas["x"])
-        # self.rotas["yaw"] = [0] * len(self.rotas["x"])
         self.xWrite, self.yWrite, self.zWrite, self.yawWrite = [], [], [], []
         
         # Values to be Changed by the User
@@ -118,12 +115,12 @@ class globalPlanner:
             self.rotas["yaw"] = [0] * len(rx)
             print("rota definida")
             self.unic["definirRota"] = 1
-            
+        
         rospy.sleep(5)
         self.unic["SM"] = 1
         self.memoria["inicial"] = memory_usage()
         self.cpu["inicial"] = psutil.cpu_percent()
-        set_vio()
+        # set_vio()
 
     # ---------------------------- Loop :3 ----------------------------------
     def callbackMain(self, odom):
@@ -216,7 +213,7 @@ class globalPlanner:
         
         if self.unic["definirRota"] == 0:
             print("defining trajectory")
-            _, t, rx, ry = alg.run(show=1, vmx=self.a, vmy=self.b, startx=self.currentPosX, starty=self.currentPosY, p1=self.p)
+            _, t, rx, ry = alg.run(show=0, vmx=self.a, vmy=self.b, startx=self.currentPosX, starty=self.currentPosY, p1=self.p)
             print("improving trajectory")
             rx, ry = rotaToGazebo(rx, ry, self.a, self.b, self.distNodes)
             self.rotas["x"] = rx
@@ -224,6 +221,9 @@ class globalPlanner:
             self.rotas["z"] = [self.altura] * len(rx)
             self.rotas["yaw"] = [0] * len(rx)
             print("trajectory defined")
+            print(self.rotas["x"])
+            print(self.rotas["y"])
+            print(self.rotas["z"])
             self.unic["definirRota"] = 1
 
     # ---------------------------- Onde o UAV ta ----------------------------------

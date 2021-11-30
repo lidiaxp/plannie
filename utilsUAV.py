@@ -211,17 +211,21 @@ def andarGlobal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPos
             req.reference.position.x = x 
             req.reference.position.y = y 
             req.reference.position.z = z
-            print(z)
-            print("------------------------")
+            # print(z)
+            # print("------------------------")
             req.reference.heading = rand
             resp = ola(req)
+            print("x: " + str(req.reference.position.x))
+            print("y: " + str(req.reference.position.y))
+            print("z: " + str(req.reference.position.z))
+            # print("rand: " + str(req.reference.heading))
             # rospy.loginfo(resp)
         except rospy.ServiceException as e:
             print("Falha na chamada de servico: %s"%e)
 
         return euclidiana(x, y, z, currentPosX, currentPosY, currentPosZ, currentPosYaw) 
     else:
-        control_cmd(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPosYaw)
+        control_cmd(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPosYaw, vel=vel)
 
 def andarLocal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPosYaw):
     rospy.wait_for_service("/uav1/control_manager/reference")
