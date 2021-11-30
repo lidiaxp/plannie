@@ -7,13 +7,13 @@ class Pontos:
     def __init__(self):
         self.checkEstatico = True
         tamCapa = 0
-        self.limiar = (100,100)
+        self.limiar = (20,20)
 
-        self.xs = 90
-        self.ys = 90
+        self.xs = 2
+        self.ys = 2
 
-        self.xt = 2
-        self.yt = 2
+        self.xt = 18
+        self.yt = 8
 
         obsVxz = {"0": [25]*(47-30), "1": [35]*(47-30), "2": [55]*(27-18), "3": [65]*(27-18), "4": [15]*(28-19), "5": [80]*(40-30), "6": [18]*(80-70)}
         obsVyz = {"0": list(np.arange(47-30+1)+30), "1": list(np.arange(47-30+1)+30), "2": list(np.arange(27-18+1)+18), "3": list(np.arange(27-18+1)+18), "4": list(np.arange(28-19+1)+7), "5": list(np.arange(40-30+1)+30), "6": list(np.arange(80-70+1)+70)}

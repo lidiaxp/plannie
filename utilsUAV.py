@@ -211,6 +211,8 @@ def andarGlobal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPos
             req.reference.position.x = x 
             req.reference.position.y = y 
             req.reference.position.z = z
+            print(z)
+            print("------------------------")
             req.reference.heading = rand
             resp = ola(req)
             # rospy.loginfo(resp)

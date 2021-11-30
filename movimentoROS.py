@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 from helper.utils import *
 from helper.ambiente import Pontos
-from classic import rrt as alg
+from classic import birrt as alg
 
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Range
@@ -45,14 +45,14 @@ class globalPlanner:
         self.a, self.b, self.a1, self.b1, self.a1b1 = [], [], [], [], [] # a,b = com capa | a1,b1 = sem capa
 
         # Variable Values
-        self.altura, self.distNodes = 4.2, 1
+        self.altura, self.distNodes = 3.2, 1
         self.currentPosX, self.currentPosY, self.currentPosZ, self.currentPosYaw = 2, 2, 0, 0
         self.alturaLaser = 0
         self.bateria = {"inicial": 0, "final": 0, "uso": 0}
         self.bateriaGazebo = {"inicial": 0, "final": 0, "uso": 0}
         self.variaveisLog = {"tt": []}
         self.memoria = {"inicial": 0, "final": 0}
-        self.cpu = {"inicial": 0, "final": 0}
+        self.cpu = {"inicial": 0, "final": 0, "uso": 0}
         self.knownEnvironment = 0
         self.controller = 1 # Use 1 to MPC and 0 to cmd_vel
 
@@ -203,8 +203,9 @@ class globalPlanner:
         if not self.knownEnvironment: 
             buildMapX, buildMapY = [], []
             for value in obs.poses:
-                buildMapX.append(value.position.x)
-                buildMapY.append(value.position.y)
+                if abs(value.position.x - self.currentPosX) > 0.3 and abs(value.position.y - self.currentPosY) > 0.3: 
+                    buildMapX.append(value.position.x)
+                    buildMapY.append(value.position.y)
 
             # a,b = com capa | a1,b1 = sem capa
             self.a, self.b, _, _, self.a1b1 =  laserROS(buildMapX, buildMapY, self.a, self.b, self.a1b1, tamCapa=0)
@@ -214,13 +215,15 @@ class globalPlanner:
             self.c = self.p.xobs
         
         if self.unic["definirRota"] == 0:
-            _, t, rx, ry = alg.run(show=0, vmx=self.a, vmy=self.b, startx=self.currentPosX, starty=self.currentPosY, p1=self.p)
+            print("defining trajectory")
+            _, t, rx, ry = alg.run(show=1, vmx=self.a, vmy=self.b, startx=self.currentPosX, starty=self.currentPosY, p1=self.p)
+            print("improving trajectory")
             rx, ry = rotaToGazebo(rx, ry, self.a, self.b, self.distNodes)
             self.rotas["x"] = rx
             self.rotas["y"] = ry
             self.rotas["z"] = [self.altura] * len(rx)
             self.rotas["yaw"] = [0] * len(rx)
-            print("rota definida")
+            print("trajectory defined")
             self.unic["definirRota"] = 1
 
     # ---------------------------- Onde o UAV ta ----------------------------------

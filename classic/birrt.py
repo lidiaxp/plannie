@@ -55,16 +55,16 @@ def steer(from_node, to_node, extend_length=float("inf")):
 def run(show=False, vmx=None, vmy=None, vmz=None, startx=None, starty=None, startz=None, p1=None):
     p = Pontos()
 
-    ed = 5.0
+    ed = 2.0
 
     obstacleList = []
 
     if startx == None:
         for px1, py1 in zip(p.xobs, p.yobs):
-            obstacleList.append((px1, py1, 1.2))
+            obstacleList.append((px1, py1, 1.0))
     else:
         for px1, py1 in zip(vmx, vmy):
-            obstacleList.append((px1, py1, 1.2))
+            obstacleList.append((px1, py1, 1.0))
 
     start = time.time()
 
@@ -80,22 +80,22 @@ def run(show=False, vmx=None, vmy=None, vmz=None, startx=None, starty=None, star
     count = 0
     ppx, ppy = [], []
 
-
+    # print(p.limiar)
     while len(ppx) == 0:
         if count%2 == 0:
             # print("olhando de " + str(auxSx) + " - " + str(auxSy))
             # print("ate " + str(auxEx) + " - " + str(auxEy))
             rrt = RRT(start=[auxSx, auxSy],
                     goal=[auxEx, auxEy],
-                    rand_area=[-2, 100],
-                    obstacle_list=obstacleList, expand_dis=ed, path_resolution=0.5, goal_sample_rate=1)
+                    rand_area=[0, max(p.limiar)],
+                    obstacle_list=obstacleList, expand_dis=ed, path_resolution=0.2, goal_sample_rate=1)
         else:
             # print("olhando de " + str(auxEx) + " - " + str(auxEy))
             # print("ate " + str(auxSx) + " - " + str(auxSy))
             rrt = RRT(start=[auxEx, auxEy],
                     goal=[auxSx, auxSy],
-                    rand_area=[-2, 100],
-                    obstacle_list=obstacleList, expand_dis=ed, path_resolution=0.5, goal_sample_rate=1)
+                    rand_area=[0, max(p.limiar)],
+                    obstacle_list=obstacleList, expand_dis=ed, path_resolution=0.2, goal_sample_rate=1)
 
         path = rrt.planning(animation=show, bi=True, iterations=p.limiar * 4)
 
@@ -119,8 +119,9 @@ def run(show=False, vmx=None, vmy=None, vmz=None, startx=None, starty=None, star
         # try:
         # print("distancia:")
         # print(math.sqrt(((pathx1[-1] - pathx2[-1])**2) + ((pathy1[-1] - pathy2[-1])**2)))
+        radius_robot = 1.0
         if count > 1:
-            if dist_euclidiana(pathx1[-1], pathy1[-1], pathx2[-1], pathy2[-1]) < ed:
+            if dist_euclidiana(pathx1[-1], pathy1[-1], pathx2[-1], pathy2[-1]) < radius_robot:
                 new_node = steer(Node(pathx1[-1], pathy1[-1]), Node(pathx2[-1], pathy2[-1]), ed)
                 if RRT.check_collision(new_node, obstacleList):
                     pathx2.reverse()
@@ -136,7 +137,7 @@ def run(show=False, vmx=None, vmy=None, vmz=None, startx=None, starty=None, star
         #     print("path dont found")
 
 
-   
+    # print("1")
     # _, px, py = distancia_rota(path)
     
     if startx==None: startx, starty = p.xs, p.ys
