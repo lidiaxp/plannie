@@ -84,11 +84,12 @@ If you will use known environments, is needed change the variable ```self.knownE
 In the movimentoROS* codes: 
 
 - Any environment can be used to run in Gazebo, but is needed that your environement is opened before run Plannie. In Plannie, the control is defined in ```andarGlobal``` function at ```utilsUav``` file. By default, the controller is MPC used by MRS, to work with ```/cmd_vel``` change the variable ```self.controller``` to 0 (1: MPC in MRS | 0: cmd_vel);
-- To change between known e unknown environment change the variable ```self.knownEnvironment```. **Note**: If use known environment is needed configure the environment, as shown in Section ```Change Environment``` below. If use unknown environment is import define start and goal node, as described in the Section below. **Note2**: By default the mapping is made with velodyne in 3D environment and rplidar in 2D environment;
+- To change between known e unknown environment change the variable ```self.knownEnvironment```. **Note**: If use known environment is needed configure the entire environment, as shown in Section ```Change Environment``` below. If use unknown environment is import define start and goal node, as described in the Section below. **Note2**: By default the mapping is made with velodyne in 3D environment and rplidar in 2D environment;
 - To use rplidar is needed download [this package](https://github.com/tysik/obstacle_detector) on your ROS workspace, insert ```launch/rplidar_mrs.launch```, from plannie package, in the launch folder of obstacle_detector package, and compile the workspace;
 - In 2D environments, if is needed to change the default height, change the variable ```self.altura```;
 - It is possible choose the path planning technique in the imports, the strucutre is similar to these model and can be change to any path planning algorithm present in the plannie;
 - You can add other variables similar to this to use different algorithms to initial planning and when discover new obstacles. The technique used in this cases are defined in callbackStatic (when discover new environments) and callbackBuildMap (initial planning);
+- Regardless of whether to use known or unknown environment, it is necessary to define the goal node and the size of the environment. In the Section ```Change Environment``` it is shown how to define these values; 
 - The dynamic path planning are disabled to simulator, but if you need use just modify the callbackDynamic.
 
 In the unknownEnvironment* codes:
