@@ -28,8 +28,9 @@ class identifyObstacle3D:
 
         rospy.init_node("obstacle3D")
         print("Start")
-        
-        _ = rospy.Subscriber("/uav1/velodyne/scan", PointCloud2, self.callbackObstacle)
+
+        # _ = rospy.Subscriber("/uav1/velodyne/scan", PointCloud2, self.callbackObstacle)
+        _ = rospy.Subscriber("/uav1/rs_d435/depth/points", PointCloud2, self.callbackObstacle)
         _ = rospy.Subscriber("/uav1/odometry/odom_main", Odometry, self.callbackPosicao)
 
     def callbackPosicao(self, odom):
@@ -56,18 +57,20 @@ class identifyObstacle3D:
             a4, a5, a6 = [], [], []
             a1, a2, a3 = [], [], []
             x, y, z = [], [], []
+            abc = []
             matriz = np.zeros((101, 101))
             xyz = np.array([[0,0,0]])   
             gen = point_cloud2.read_points(data, skip_nans=True)
             int_data = list(gen)
 
             for x in int_data:
-                if round(x[2]) + 1 > 0:
+                if round(x[2]) > 0 and [round(x[0]), round(-x[1]), round(x[2])] not in abc:
                     a4.append(round(x[0]))
                     a5.append(round(-x[1]))
-                    a6.append(round(x[2]+1))
+                    a6.append(round(x[2]))
+                    abc.append([round(x[0]), round(-x[1]), round(x[2])])
 
-            pl = self.rotationMatrix(-0.71, a4, a5, a6)
+            pl = self.rotationMatrix(0, a4, a5, a6)
             
             for i1, i2, i3 in zip(pl[0], pl[1], pl[2]):
                 a1.append(i2)
@@ -81,9 +84,9 @@ class identifyObstacle3D:
                 ax = plt.axes(projection = "3d")
                 ax.plot3D(a1, a2, a3, 'y.') 
                 ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
-                ax.set_xlim(0,100) 
-                ax.set_ylim(0,100) 
-                ax.set_zlim(0,5) 
+                ax.set_xlim(0,20) 
+                ax.set_ylim(0,20) 
+                ax.set_zlim(0,20) 
                 ax.set_xlabel("x (m)" + str(self.currentPosX))
                 ax.set_ylabel("y (m)" + str(self.currentPosY))
                 ax.set_zlabel("z (m)" + str(self.currentPosZ))

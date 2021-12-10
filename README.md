@@ -171,6 +171,15 @@ To use coverage path planning with sweep algorithm:
 
 To use these algorithms in the primary code import them at the start and define the use. Commonly, the coverage algorithm is used in __ init __ and tsp is used to optimize some route.
 
+## Authors
+
+- [@lidiaxp](https://lidiaxp.github.io/)
+- [@kelenVivaldini](https://github.com/vivaldini)
+
+## Feedback
+
+If you have any feedback, please reach out to us at lidia@estudante.ufscar.br with subject "Plannie - Feedback".
+
 ## License
 
 MIT License
@@ -194,10 +203,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-  
-## Feedback
-
-If you have any feedback, please reach out to us at lidia@estudante.ufscar.br with subject "Plannie - Feedback".
-
   
