@@ -34,6 +34,10 @@ The path planning algorithms avaiable are:
 
 ## Running Tests
 
+It is highly recommended to carry out the first tests with [this simulator](https://github.com/ctu-mrs/mrs_uav_system) as it is defined for the movimentoROS* and unknownEnvironments* codes. There is a decision maker to work with the drone_dev controller and cmd_vel robots, ```decisionMakerDroneDev.py``` and ```decisionMakerCmdVel.py```, respectively. However the structure provided is the default, still being necessary to configure it to work in specific missions.
+
+A description of how to make this configuration will be released soon. For more experienced users, it is possible to import the usage mode of the movimentoROS* codes to operate in the same way. 
+
 ```diff
 - Please, read Mode of Use Section before running tests
 ```
@@ -95,9 +99,9 @@ In the movimentoROS* codes:
 In the unknownEnvironment* codes:
 
 - There are a list of algorithms avaiable at the start (next to line 25), just turn the variable true to use the technique;
-- In this case, by default, is not possible use different algorithms to initial planning and when discover new obstacles. However, it is possible import the technique in helper/unknown.py and define the best technique to each planning. The initial planning is defined in alg.run next to line 96, and the planning when discover new obstacles is defined in alg.run nexto to line 326;
+- In this case, by default, is not possible use different algorithms to initial planning and when discover new obstacles. However, it is possible import the technique in helper/unknown.py and define the best technique to each planning. The initial planning is defined in alg.run next to line 96, and the planning when discover new obstacles is defined in alg.run next to to line 326;
 - Define dynamic obstacles in helper/unknown.py in the variables obs* (next to line 22);
-- The algorithm to be used in dynamic path planning is defined with the function newSmooth nexto to line 276 and 279. This function uses Pedestrian Avoidance Method, if you need use Riemannian Motion Policies, import it at start and switch this function.
+- The algorithm to be used in dynamic path planning is defined with the function newSmooth next to to line 276 and 279. This function uses Pedestrian Avoidance Method, if you need use Riemannian Motion Policies, import it at start and switch this function.
 
 If you will carry out flights in real environment, have several scripts to support use the sensors in the folder _helper_.
 
@@ -142,14 +146,14 @@ To modify the height of these walls change zobs* variables. If you want define t
 - **self.zobs**: define all Z nodes
 
 To use external maps:
-- **houseExop maps**: run readFromHouseExpo function in ```helper/ocupancyGridMap.py``` (defining the json file form houseExpo) and import the return in the ambiente.py file 
-- **Videogame maps**: run readFromWarframe function in ```helper/ocupancyGridMap.py``` and import the return in the ambiente.py file 
+- **houseExpo maps**: run readFromHouseExpo function in ```helper/ocupancyGridMap.py``` (defining the json file form houseExpo) and import the return in the ambiente.py file
+- **Videogame maps**: run readFromWarframe function in ```helper/ocupancyGridMap.py``` and import the return in the ambiente.py file
 
 To create your own maps:
 
-- **2D indoor**: ```python3 helper/createScenario/createScenario.py``` and draw your scenario, when the pointer out from the screen the x and y nodes will be showed in the terminal.
-- **2D/3D indoor**: the file ```helper/createScenario/caixas.py``` will export, in a .txt, all models to be used in a .world file (from gazebo) to build the environment. The sctructure is the same of 3D environment in ```3D/helper/ambiente.py```.
-- **Forests**: the file ```helper/createScenario/createGazeboModel.py``` export a .world to be used in Gazebo simulator. The variable size1 and size2 define the size of the forest, sapce is the spacing between the trees, beta is the forest density. It is possible to add gaps with the function createClareira (example next to line 300). The alpha variable represents the gaps density. 
+- **2D indoor**: ```python3 helper/createScenario/createScenario.py``` and draw your scenario, when the pointer out from the screen the x and y nodes will be showed in the terminal
+- **2D/3D indoor**: the file ```helper/createScenario/caixas.py``` will export, in a .txt, all models to be used in a .world file (from gazebo) to build the environment. The sctructure is the same of 3D environment in ```3D/helper/ambiente.py```
+- **Forests**: the file ```helper/createScenario/createGazeboModel.py``` export a .world to be used in Gazebo simulator. The variable size1 and size2 define the size of the forest, space is the spacing between the trees, beta is the forest density. It is possible to add gaps with the function createClareira (example next to line 300). The alpha variable represents the gaps density
 
 ## Extra Features
 
