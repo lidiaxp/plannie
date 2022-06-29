@@ -3,6 +3,7 @@
 
 Plannie is a framework to path planning in Python, simulated environments, and flights in real environments.
 
+https://user-images.githubusercontent.com/12784079/176349321-57d7d184-777d-4b59-9217-eefb928d2ce6.mp4
 
 ## Installation
 
