@@ -14,7 +14,15 @@ The project can be installed in any directory on the computer with the following
   git clone https://github.com/lidiaxp/plannie.git
   pip install -r requirements.txt
 ```
-    
+   
+## Published Papers
+
+If you use the benchmark in your work, please, reference one of ours papers.
+
+`L. Rocha and K. Vivaldini, "Plannie: A Benchmark Framework for Autonomous Robots Path Planning Algorithms Integrated to Simulated and Real Environments," 2022 International Conference on Unmanned Aircraft Systems (ICUAS), Dubrovnik, Croatia, 2022, pp. 402-411, doi: 10.1109/ICUAS54217.2022.9836102.`
+
+`L. Rocha and K. Vivaldini, "A 3D Benchmark for UAV Path Planning Algorithms: Missions Complexity, Evaluation and Performance," 2022 International Conference on Unmanned Aircraft Systems (ICUAS), Dubrovnik, Croatia, 2022, pp. 412-420, doi: 10.1109/ICUAS54217.2022.9836190.`
+   
 ## Features
 
 - Classical, meta heuristic, and machine learning path planning techniques in 2D and 3D;
