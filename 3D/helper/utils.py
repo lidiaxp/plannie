@@ -554,9 +554,10 @@ def colidirTrajetoria3D(ox, oy, oz, rotax, rotay, rotaz, pos, value=0.1):
     # value = 0.1 for outdoor environment and 0.35 for indoor environment
     for (x, y, z) in zip(rotax[pos:pos+6], rotay[pos:pos+6], rotaz[pos:pos+6]):
         for (o1, o2, o3) in zip(ox, oy, oz):
-            ola = dist_euclidiana(o1, o2, x, y)
-            # if ola < 10: print(dist_euclidiana(o1, o2, x, y))
-            if ola < value:# and abs(o3 - z) <= 1:
+            dist3D = dist_euclidiana3D(o1, o2, o3, x, y, z)
+            dist = dist_euclidiana(o1, o2, x, y)
+            # if dist < 10: print(dist_euclidiana(o1, o2, x, y))
+            if dist3D < value:# and abs(o3 - z) <= 1:
                 return True
 
     return False
@@ -582,7 +583,7 @@ def colisaoTrajetoria3D(ox, oy, oz, rotax, rotay, rotaz, pos=0, value=0.25, valu
             ola3D = dist_euclidiana3D(o1, o2, o3, x, y, z)
             ola = dist_euclidiana(o1, o2, x, y)
             # if ola < 10: print(dist_euclidiana(o1, o2, x, y))
-            if ola3D < value3D and abd(z-o3) <= 1:
+            if ola3D < value3D and abs(z-o3) <= 1:
                 return True, x, y, z, value
         value += 1
 

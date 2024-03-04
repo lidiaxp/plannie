@@ -109,6 +109,7 @@ def run(show=0, vmx=None, vmy=None, vmz=None, startx=None, starty=None, startz=N
 
     # print(path3d)
     # print(path3d[:, 0])
+    print(path3d)
     try:
         a, b, c = path3d[:, 0], path3d[:, 1], path3d[:, 2]
     except:

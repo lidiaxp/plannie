@@ -19,6 +19,7 @@ import pygame
 sample_rate = 48000
 pygame.mixer.pre_init(sample_rate, -16, 1, 1024)
 pygame.init()
+drone_number = 1
 
 class colors:
     HEADER = '\033[95m'
@@ -37,9 +38,9 @@ def diegoVoice(audio):
     pygame.mixer.music.play()
 
 def decolagemInicial():
-    rospy.wait_for_service("/uav1/mavros/cmd/arming")
+    rospy.wait_for_service(f"/uav{drone_number}/mavros/cmd/arming")
     try:
-        ola = rospy.ServiceProxy("/uav1/mavros/cmd/arming", CommandBool)
+        ola = rospy.ServiceProxy(f"/uav{drone_number}/mavros/cmd/arming", CommandBool)
         req = CommandBoolRequest()
         req.value = 1
         resp = ola(req)
@@ -47,9 +48,9 @@ def decolagemInicial():
     except rospy.ServiceException as e:
         print("Falha na chamada de servico: %s"%e)
     
-    rospy.wait_for_service("/uav1/mavros/set_mode")
+    rospy.wait_for_service(f"/uav{drone_number}/mavros/set_mode")
     try:
-        ola = rospy.ServiceProxy("/uav1/mavros/set_mode", SetMode)
+        ola = rospy.ServiceProxy(f"/uav{drone_number}/mavros/set_mode", SetMode)
         req = SetModeRequest()
         req.base_mode = 0
         req.custom_mode = "offboard"
@@ -58,9 +59,9 @@ def decolagemInicial():
     except rospy.ServiceException as e:
         print("Falha na chamada de servico: %s"%e)
 
-    rospy.wait_for_service("/uav1/control_manager/use_safety_area")
+    rospy.wait_for_service(f"/uav{drone_number}/control_manager/use_safety_area")
     try:
-        ola = rospy.ServiceProxy("/uav1/control_manager/use_safety_area", SetBool)
+        ola = rospy.ServiceProxy(f"/uav{drone_number}/control_manager/use_safety_area", SetBool)
         req = SetBoolRequest()
         req.data = False
         resp = ola(req)
@@ -68,9 +69,9 @@ def decolagemInicial():
     except rospy.ServiceException as e:
         print("Falha na chamada de servico: %s"%e)
 
-    rospy.wait_for_service("/uav1/control_manager/set_min_height")
+    rospy.wait_for_service(f"/uav{drone_number}/control_manager/set_min_height")
     try:
-        ola = rospy.ServiceProxy("/uav1/control_manager/set_min_height", Float64Srv)
+        ola = rospy.ServiceProxy(f"/uav{drone_number}/control_manager/set_min_height", Float64Srv)
         req = Float64SrvRequest()
         req.value = 0
         resp = ola(req)
@@ -79,9 +80,9 @@ def decolagemInicial():
         print("Falha na chamada de servico: %s"%e)
 
 def set_vio(estimador="BARO"):
-    rospy.wait_for_service("/uav1/odometry/change_alt_estimator_type_string")
+    rospy.wait_for_service(f"/uav{drone_number}/odometry/change_alt_estimator_type_string")
     try:
-        ola = rospy.ServiceProxy("/uav1/odometry/change_alt_estimator_type_string", String)
+        ola = rospy.ServiceProxy(f"/uav{drone_number}/odometry/change_alt_estimator_type_string", String)
         req = StringRequest()
         req.value = estimador
         resp = ola(req)
@@ -102,9 +103,9 @@ class parametroDouble:
 
 def setDoubleParameter(option=["kiwxy"], value=[0.1]):
     # option can be kiwxy, kibxy, km
-    rospy.wait_for_service("/uav1/control_manager/mpc_controller/set_parameters")
+    rospy.wait_for_service(f"/uav{drone_number}/control_manager/mpc_controller/set_parameters")
     try:
-        ola = rospy.ServiceProxy("/uav1/control_manager/mpc_controller/set_parameters", Reconfigure)
+        ola = rospy.ServiceProxy(f"/uav{drone_number}/control_manager/mpc_controller/set_parameters", Reconfigure)
         req = ReconfigureRequest()
         req.config.doubles = []
         for a, b in zip(option, value):
@@ -176,28 +177,29 @@ def melhorRota(x, y, posX, posY):
     return camFinalX[1:], camFinalY[1:]
 
 def takeoff():
-    rospy.wait_for_service("/uav1/uav_manager/takeoff")
+    rospy.wait_for_service(f"/uav{drone_number}/uav_manager/takeoff")
     try:
-        ola = rospy.ServiceProxy("/uav1/uav_manager/takeoff", Trigger)
+        ola = rospy.ServiceProxy(f"/uav{drone_number}/uav_manager/takeoff", Trigger)
         ola()
     except rospy.ServiceException as e:
         print("Falha na chamada de servico: %s"%e)
 
 def land():
-    rospy.wait_for_service("/uav1/uav_manager/land")
+    rospy.wait_for_service(f"/uav{drone_number}/uav_manager/land")
     try:
-        ola = rospy.ServiceProxy("/uav1/uav_manager/land", Trigger)
+        ola = rospy.ServiceProxy(f"/uav{drone_number}/uav_manager/land", Trigger)
         ola()
     except rospy.ServiceException as e:
         print("Falha na chamada de servico: %s"%e)
 
 def andarGlobal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPosYaw, vel=0.5, rotacao=False, MPC=True):
+    rand = 0
     if MPC:
-        rospy.wait_for_service("/uav1/control_manager/reference")
-        rand = rotacionar(currentPosX, currentPosY, x, y) if rotacao else currentPosYaw
+        rospy.wait_for_service(f"/uav{drone_number}/control_manager/reference")
+        # rand = rotacionar(currentPosX, currentPosY, x, y) if rotacao else currentPosYaw
 
         try:
-            ola = rospy.ServiceProxy("/uav1/control_manager/reference", ReferenceStampedSrv)
+            ola = rospy.ServiceProxy(f"/uav{drone_number}/control_manager/reference", ReferenceStampedSrv)
             req = ReferenceStampedSrvRequest()
             req.reference.position.x = x 
             req.reference.position.y = y 
@@ -211,17 +213,17 @@ def andarGlobal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPos
         # print("Estou em: x " + str(currentPosX) + " y " + str(currentPosY) + " z " + str(currentPosZ))
         # print("Estou indo para: x " + str(x) + " y " + str(y) + " z " + str(z))
         # print("Tempo: " + str(euclidiana(x, y, z, currentPosX, currentPosY, currentPosZ, currentPosYaw)))
-        return euclidiana(x, y, z, currentPosX, currentPosY, currentPosZ, currentPosYaw) 
+        return euclidiana(x, y, z, currentPosX, currentPosY, currentPosZ, currentPosYaw) * 0.6
 
     else:
         control_cmd(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPosYaw)
 
 # def andarGlobal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPosYaw):
-#     rospy.wait_for_service("/uav1/control_manager/goto_fcu")
+#     rospy.wait_for_service(f"/uav{drone_number}/control_manager/goto_fcu")
 #     rand = rotacionar(currentPosX, currentPosY, x, y)
 
 #     try:
-#         ola = rospy.ServiceProxy("/uav1/control_manager/reference", Vec4Srv)
+#         ola = rospy.ServiceProxy(f"/uav{drone_number}/control_manager/reference", Vec4Srv)
 #         req = Vec4SrvRequest()
         
 #         req.goal[0] = x - currentPosX 
@@ -236,11 +238,11 @@ def andarGlobal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPos
 #     return euclidiana(x, y, z, currentPosX, currentPosY, currentPosZ, currentPosYaw) * 0.6
 
 # def andarLocal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPosYaw):
-#     rospy.wait_for_service("/uav1/control_manager/goto_fcu")
+#     rospy.wait_for_service(f"/uav{drone_number}/control_manager/goto_fcu")
 #     rand = rotacionar(currentPosX, currentPosY, x, y)
 
 #     try:
-#         ola = rospy.ServiceProxy("/uav1/control_manager/reference", Vec4Srv)
+#         ola = rospy.ServiceProxy(f"/uav{drone_number}/control_manager/reference", Vec4Srv)
 #         req = Vec4SrvRequest()
         
 #         req.goal[0] = x 
@@ -255,9 +257,9 @@ def andarGlobal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPos
 #     return euclidiana(x, y, z, currentPosX, currentPosY, currentPosZ, currentPosYaw) * 0.6
 
 def andarLocal(x, y, z, rand, currentPosX, currentPosY, currentPosZ, currentPosYaw):
-    rospy.wait_for_service("/uav1/control_manager/reference")
+    rospy.wait_for_service(f"/uav{drone_number}/control_manager/reference")
     try:
-        ola = rospy.ServiceProxy("/uav1/control_manager/reference", ReferenceStampedSrv)
+        ola = rospy.ServiceProxy(f"/uav{drone_number}/control_manager/reference", ReferenceStampedSrv)
         req = ReferenceStampedSrvRequest()
         req.reference.position.x = currentPosX - x
         req.reference.position.y = y + currentPosY

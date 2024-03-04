@@ -6,7 +6,7 @@ class Pontos:
     def __init__(self):
         self.checkEstatico = True
         tamCapa = 0
-        self.limiar = (20,10)
+        self.limiar = (40,10)
 
         altZ = 2
         self.xs = 2
@@ -14,8 +14,8 @@ class Pontos:
         self.zs = 2
 
         # Cena 1 e 2
-        self.xt = 19#self.limiar[0] - 5
-        self.yt = 9#self.limiar[1] - 5
+        self.xt = 30 # self.limiar[0] - 5
+        self.yt = 4 # self.limiar[1] - 5
         self.zt = 3
 
         

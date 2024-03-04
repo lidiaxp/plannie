@@ -18,10 +18,10 @@ def run(show=False, vmx=[None], vmy=None, vmz=None, startx=None, starty=None, st
     p = Pontos()
     start = time.time()
 
-    x_min = 0
-    x_max = p.limiar[0]+1
-    y_min = 0
-    y_max = p.limiar[1]+1
+    x_min = 18
+    x_max = 100
+    y_min = -10
+    y_max = -5
     z_min = 0
     z_max = 6
 
@@ -42,8 +42,7 @@ def run(show=False, vmx=[None], vmy=None, vmz=None, startx=None, starty=None, st
         x_init = (startx, starty, startz)
         
     x_goal = (p.xt, p.yt, p.zt)  # goal location
-
-    
+    # x_goal = (100, -7, 3)  # goal location
 
     Q = np.array([2])  # length of tree edges
     r = 0.5  # length of smallest edge to check for intersection with obstacles
@@ -82,9 +81,19 @@ def run(show=False, vmx=[None], vmy=None, vmz=None, startx=None, starty=None, st
             y.append(caminho[1])
             z.append(caminho[2])
 
+    # print('1')
+    # print(x, y)
     xxx1, yyy1, zzz1 = diminuir_pontos3D(x, y, z, p.xobs, p.yobs, p.zobs, value=0.8)
+
+    # print('2')
+    # print(xxx1, yyy1)
     xxx1, yyy1, zzz1 = tirarRepertido3D(xxx1, yyy1, zzz1)
-    xx, yy, zz = generate_curve(xxx1, yyy1, zzz1)
+
+    # print('3')
+    # print(xxx1, yyy1)
+    # xx, yy, zz = generate_curve(xxx1, yyy1, zzz1)
+    xx, yy, zz = x, y, z
+    # xx, yy, zz = xxx1, yyy1, zzz1
 
     zz = np.clip(zz, 0.5, float("inf"))
 
@@ -101,5 +110,11 @@ def run(show=False, vmx=[None], vmy=None, vmz=None, startx=None, starty=None, st
     #     plt.show()
 
     distance = distancia_rota3D(xx, yy, zz)
+
+    # print(xx[:20])
+    # print(yy[-20:])
+
+    # print(xx)
+    # print(yy)
 
     return distance, time.time() - start, xx, yy, zz

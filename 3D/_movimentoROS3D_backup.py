@@ -148,8 +148,10 @@ class globalPlanner:
         ############# Battery
         _ = rospy.Subscriber("/battery/percent", Int32, self.callbackBatteryGazebo) # 20
         ############# Avoid Obstacle
+        # _ = rospy.Subscriber("/uav1/odometry/odom_main_innovation", Odometry, self.callbackDynamic)
         _ = rospy.Subscriber(f"/uav{drone_number}/odometry/gps_local_odom", Odometry, self.callbackStatic)
         ############# Mapping
+        # _ = rospy.Subscriber(f"/uav{drone_number}/velodyne/scan", PointCloud2, self.callbackBuildMap3D)
         _ = rospy.Subscriber(f"/occupied_cells_vis_array", MarkerArray, self.callbackBuildMap3D_octomap)
 
         for i in range(2,21):
@@ -168,36 +170,7 @@ class globalPlanner:
         if self.unic["SM"] == 1 and self.unic["definirRota"] == 1: 
             self.rotinaNormal()
 
-    # ---------------------------- Bateria ----------------------------------
-    def callbackBattery(self, bat):
-        self.bateria["atual"] = bat.current
-        if self.unic["bateria"] == 0:
-            self.bateria["inicial"] = bat.current
-            self.unic["bateria"] = 1
-            self.counts["total"] = time()
-
-        if self.unic["bateria"] == 2:
-            self.bateria["final"] = bat.current
-            self.bateria["uso"] = self.bateria["final"] - self.bateria["inicial"]
-            self.unic["bateria"] = 4
-
-    def callbackBatteryGazebo(self, bat):
-        self.bateriaGazebo["atual"] = bat.data
-        if self.unic["bateriaGazebo"] == 0:
-            self.bateriaGazebo["inicial"] = bat.data
-            self.unic["bateriaGazebo"] = 1
-
-        if self.unic["bateriaGazebo"] == 2:
-            print(bat.data)
-            self.bateriaGazebo["final"] = bat.data
-            self.bateriaGazebo["uso"] = self.bateriaGazebo["final"] - self.bateriaGazebo["inicial"]
-            # self.unic["bateriaGazebo"] = 4
-
-    # ---------------------------- Construir Mapa ----------------------------------
-    def callbackLaser(self, alt):
-        self.alturaLaser = alt.range
-
-    # ---------------------------- Obstaculo Dinamico ----------------------------------
+    
     def callbackDynamicVision(self, data, args):
         uav_traj_sample = {
             'x': self.rotas["x"][self.pos:self.pos+int(len(self.rotas["x"]) * 0.4)], 
@@ -251,6 +224,114 @@ class globalPlanner:
             self.rotas["yaw"] = np.array([np.pi/2] * len(self.rotas["x"]))
 
             self.rotas["x"], self.rotas["y"], self.rotas["z"] = rotaToGazebo3D(self.rotas["x"], self.rotas["y"], self.rotas["z"], self.a, self.b, self.c)
+
+    # ---------------------------- Bateria ----------------------------------
+    def callbackBattery(self, bat):
+        self.bateria["atual"] = bat.current
+        if self.unic["bateria"] == 0:
+            self.bateria["inicial"] = bat.current
+            self.unic["bateria"] = 1
+            self.counts["total"] = time()
+
+        if self.unic["bateria"] == 2:
+            self.bateria["final"] = bat.current
+            self.bateria["uso"] = self.bateria["final"] - self.bateria["inicial"]
+            self.unic["bateria"] = 4
+
+    def callbackBatteryGazebo(self, bat):
+        self.bateriaGazebo["atual"] = bat.data
+        if self.unic["bateriaGazebo"] == 0:
+            self.bateriaGazebo["inicial"] = bat.data
+            self.unic["bateriaGazebo"] = 1
+
+        if self.unic["bateriaGazebo"] == 2:
+            print(bat.data)
+            self.bateriaGazebo["final"] = bat.data
+            self.bateriaGazebo["uso"] = self.bateriaGazebo["final"] - self.bateriaGazebo["inicial"]
+            # self.unic["bateriaGazebo"] = 4
+
+    # ---------------------------- Construir Mapa ----------------------------------
+    def callbackLaser(self, alt):
+        self.alturaLaser = alt.range
+
+    # ---------------------------- Obstaculo Dinamico ----------------------------------
+    def callbackDynamic(self, odom):
+        # print("Obstaculo dinamico")
+        v1x, v1y, v1z, v1all, v2x, v2y, v2z, v2all = [], [], [], [], [], [], [], []
+        ehDym = 0
+        obsX, obsY, obsZ = [], [], []
+        if self.checkDym:
+            for i in range(len(self.ABC)):
+                v1, v2, v3 = self.ABC[i], self.ABC1[i], self.ABC2[i]
+                if v1 in self.ABC: self.ABC.remove(v1)
+                if v1 in self.ABC1: self.ABC1.remove(v1)
+                if v1 in self.ABC2: self.ABC2.remove(v1)
+                if v2 in self.ABC: self.ABC.remove(v2)
+                if v2 in self.ABC1: self.ABC1.remove(v2)
+                if v2 in self.ABC2: self.ABC2.remove(v2)
+                if v3 in self.ABC: self.ABC.remove(v3)
+                if v3 in self.ABC1: self.ABC1.remove(v3)
+                if v3 in self.ABC2: self.ABC2.remove(v3)
+
+            s01, s02 = 0, 0
+            s11, s12 = 0, 0
+            s21, s22 = 0, 0
+            for i in self.ABC:
+                s01 += i[0]
+                s02 += i [1]
+            for i in self.ABC1:
+                s11 += i[0]
+                s12 += i [1]
+            for i in self.ABC2:
+                s21 += i[0]
+                s22 += i [1]
+            
+            direcao = 0 # 1: esquerda | 2: direita | 3: frente | 4: tras
+            if s21 > s11 and s21 > s01:
+                direcao = 1
+                ehDym = 1
+            if s21 < s11 and s21 < s01:
+                direcao = 2
+                ehDym = 1
+            if s22 > s12 and s22 > s02:
+                direcao = 3
+                ehDym = 1
+            if s22 < s12 and s22 < s02:
+                direcap = 4
+                ehDym = 1
+
+            if ehDym:
+                distanciaBase = float("inf")
+                for i in self.ABC:
+                    value = dist_euclidiana3D(i[0], i[1], i[2], self.currentPosX, self.currentPosY, self.currentPosZ)
+                    if value < distanciaBase:
+                        pontoColisao = i
+                        distanciaBase = value
+                        
+                for ox, oy, oz in zip(obsX, obsY, obsZ):
+                    if colidirTrajetoria3D(self.newA2, self.newB2, self.newC2, self.rotas["x"], self.rotas["y"], self.rotas["z"], self.pos):
+                        pontoColisao = [ox, oy, oz]
+                        self.rotas["x"] = np.concatenate((self.rotas["x"][:self.pos], [pontoColisao[0]] , self.rotas["x"][self.pos+3:]), axis=0)
+                        self.rotas["y"] = np.concatenate((self.rotas["y"][:self.pos], [pontoColisao[1]] , self.rotas["y"][self.pos+3:]), axis=0)
+                        self.rotas["z"] = np.concatenate((self.rotas["z"][:self.pos], [pontoColisao[2]] , self.rotas["z"][self.pos+3:]), axis=0)
+                        newPoints = generate_curve(self.rotas["x"], self.rotas["y"], self.rotas["z"])
+                        self.rotas["x"], self.rotas["y"], self.rotas["z"] = newPoints[:][0], newPoints[:][1], newPoints[:][2]
+                        self.rotas["yaw"] = np.array([np.pi/2] * len(self.rotas["x"]))
+                        if pontoColisao in self.abc:
+                            self.abc.remove(pontoColisao)
+                            self.a.remove(pontoColisao[0])
+                            self.b.remove(pontoColisao[1])
+                            self.c.remove(pontoColisao[2])
+                            # self.a, self.b, self.c = [], [], []
+                            # for value in self.abc:
+                            #     self.a.append(value[0])
+                            #     self.b.append(value[1])
+                            #     self.c.append(value[2])
+
+                    self.rotas["x"], self.rotas["y"], self.rotas["z"] = rotaToGazebo3D(self.rotas["x"], self.rotas["y"], self.rotas["z"], self.a, self.b, self.c)
+                    ehDym = 0
+
+            self.checkDym = 0
 
 
     # ---------------------------- Obstaculo Estatico ----------------------------------
@@ -323,8 +404,211 @@ class globalPlanner:
                 #     print("not")
 
     # ---------------------------- Altura Laser ----------------------------------
+    def callbackBuildMap2D(self, obs):
+        buildMapX, buildMapY = [], []
+        for value in obs.poses:
+            if dist_euclidiana(self.currentPosX, self.currentPosY, value.position.x, value.position.y) < self.distanciaObsPerto:
+                buildMapX.append(value.position.x)
+                buildMapY.append(value.position.y)
+
+        # a,b = com capa | a1,b1 = sem capa
+        self.localX, self.localY, _, _, self.localXY =  laserROS(buildMapX, buildMapY, self.localX, self.localY, self.localXY, tamCapa=0)
+
+    def callbackGPSRTK(self, data):
+        if self.unic["gpsrtk"] == 0:
+            self.zero["rtkx"] = data.latitude
+            self.zero["rtky"] = data.longitude
+            self.zero["rtkz"] = data.altitude
+        else:
+            self.currentPosX = haversine([self.zero["rtkx"], self.zero["rtky"]], [self.zero["rtkx"], data.longitude])*1000
+            if data.latitude < self.zero["rtkx"]: self.currentPosX *= -1 
+            self.currentPosY = haversine([self.zero["rtkx"], self.zero["rtky"]], [data.latitude, self.zero["rtky"]])*1000
+            if data.longitude < self.zero["rtky"]: self.currentPosY *= -1 
+            self.currentPosZ = data.altitude - self.zero["rtkz"]
+
+    def rotationMatrix(self, psi0, x1, y1, z1):
+        r = [[np.cos(psi0), np.sin(psi0) * -1, 0], [np.sin(psi0), np.cos(psi0), 0], [0, 0, 1]]
+        pos_local = np.dot(np.transpose(np.asarray(r)), np.asarray([x1, y1, z1]))
+        return pos_local
+    
+
+    def callbackHokuyo(self, data):
+        for index, value in enumerate(data.ranges[240:720-240]):
+            if value < 15:
+                aux = np.linspace(90, 0, 720-480)
+                theta = aux[index]
+                if self.countDym == 0:
+                    self.newA.append(np.cos(np.radians(theta)) * value)
+                    self.newB.append(np.sin(np.radians(theta)) * value)
+                    self.newC.append(self.currentPosZ)
+                elif self.countDym == 1:
+                    self.newA1.append(np.cos(np.radians(theta)) * value)
+                    self.newB1.append(np.sin(np.radians(theta)) * value)
+                    self.newC1.append(self.currentPosZ)
+                else:
+                    self.newA2.append(np.cos(np.radians(theta)) * value)
+                    self.newB2.append(np.sin(np.radians(theta)) * value)
+                    self.newC2.append(self.currentPosZ)
+
+        if self.countDym == 0:
+            pl = rotationMatrix3D(self.currentPosYaw, self.newA, self.newB, self.newC, "yaw")
+            self.newA = pl[0] 
+            self.newB = pl[1] 
+            self.newC = pl[2] 
+        elif self.countDym == 1:
+            pl = rotationMatrix3D(self.currentPosYaw, self.newA1, self.newB1, self.newC1, "yaw")
+            self.newA1 = pl[0] 
+            self.newB1 = pl[1] 
+            self.newC1 = pl[2] 
+        else:
+            pl = rotationMatrix3D(self.currentPosYaw, self.newA2, self.newB2, self.newC2, "yaw")
+            self.newA2 = pl[0] 
+            self.newB2 = pl[1] 
+            self.newC2 = pl[2] 
+        self.countDym += 1
+
+        if self.countDym == 3:
+            for i1, i2, i3 in zip(pl[0], pl[1], pl[2]):
+                if [round(i1), round(i2), round(i3)] not in self.abc:
+                    self.a.append(round(i1))
+                    self.b.append(round(i2))
+                    self.c.append(round(i3))
+                    self.abc.append([round(i1), round(i2), round(i3)])
+            
+            self.countDym = 0
+            self.checkDym = 1
+            self.newA, self.newB, self.newC, self.newA1, self.newB1, self.newC1, self.newA2, self.newB2, self.newC2 = [], [], [], [], [], [], [], [], []
+
+
+    def callbackBuildMap3D(self, data):
+        if self.velodyne:
+            if not self.knownEnvironment: 
+                gen = point_cloud2.read_points(data, skip_nans=True)
+                int_data = list(gen)
+
+                self.newA, self.newB, self.newC = [], [], []
+
+                for x in int_data:
+                    if round(x[2] >= 0):
+                        self.newA.append(round(x[0]))
+                        self.newB.append(round(x[1]))
+                        self.newC.append(round(x[2]))
+                        # self.newA.append(x[0])
+                        # self.newB.append(x[1])
+                        # self.newC.append(x[2])
+
+                pl = self.rotationMatrix(self.currentPosYaw + math.radians(90), self.newA, self.newB, self.newC)
+
+                self.newA, self.newB, self.newC = [], [], []
+
+                # print("Virar para: " + str(math.degrees(self.rand)))
+                # print("Angulo superior: " + str(math.degrees(randSup)))
+                # print("Angulo inferior: " + str(math.degrees(randInf)))
+
+                for i1, i2, i3 in zip(pl[0], pl[1], pl[2]):
+                    dentroRange = 1
+
+                    if dentroRange:
+                        if [round(i1), round(i2), round(i3)] not in self.abc and round(i2)>1:
+                            self.newA.append(round(i2+3))
+                            self.newB.append(round(i1+3))
+                            self.newC.append(round(i3+1))
+                            self.a.append(round(i2+3))
+                            self.b.append(round(i1+3))
+                            self.c.append(round(i3+1))
+                            
+                            self.abc.append([round(i1), round(i2), round(i3)])
+
+                        value = np.sqrt((self.currentPosX - self.a[-1])**2 + (self.currentPosY - self.b[-1])**2 + (self.currentPosZ - self.c[-1])**2)      
+                        if value < 15:
+                            if self.countDym == 0:
+                                self.newA.append(self.a[-1])
+                                self.newB.append(self.b[-1])
+                                self.newC.append(self.c[-1])
+                            elif self.countDym == 1:
+                                self.newA1.append(self.a[-1])
+                                self.newB1.append(self.b[-1])
+                                self.newC1.append(self.c[-1])
+                            else:
+                                self.newA2.append(self.a[-1])
+                                self.newB2.append(self.b[-1])
+                                self.newC2.append(self.c[-1])
+
+                        if self.countDym == 0:
+                            pl = rotationMatrix3D(self.currentPosYaw, self.newA, self.newB, self.newC, "yaw")
+                            self.newA = pl[0].tolist() 
+                            self.newB = pl[1].tolist() 
+                            self.newC = pl[2].tolist()
+                        elif self.countDym == 1:
+                            pl = rotationMatrix3D(self.currentPosYaw, self.newA1, self.newB1, self.newC1, "yaw")
+                            self.newA1 = pl[0].tolist() 
+                            self.newB1 = pl[1].tolist()
+                            self.newC1 = pl[2].tolist()
+                        else:
+                            pl = rotationMatrix3D(self.currentPosYaw, self.newA2, self.newB2, self.newC2, "yaw")
+                            self.newA2 = pl[0].tolist()
+                            self.newB2 = pl[1].tolist()
+                            self.newC2 = pl[2].tolist()
+                        self.countDym += 1
+
+                        if self.countDym == 3:
+                            for i1, i2, i3 in zip(pl[0], pl[1], pl[2]):
+                                if [round(i1), round(i2), round(i3)] not in self.abc:
+                                    self.a.append(round(i1))
+                                    self.b.append(round(i2))
+                                    self.c.append(round(i3))
+                                    self.abc.append([round(i1), round(i2), round(i3)])
+                            
+                            self.countDym = 0
+                            self.checkDym = 1
+                            self.newA, self.newB, self.newC, self.newA1, self.newB1, self.newC1, self.newA2, self.newB2, self.newC2 = [], [], [], [], [], [], [], [], []
+            else:
+                self.a = self.p.xobs
+                self.b = self.p.xobs
+                self.c = self.p.xobs
+
+            print(self.a)
+            print(self.b)
+            print(self.c)
+
+            if self.unic["definirRota"] == 0:
+                print("Iniciando a definir rota")
+                _, t, rx, ry, rz = alg.run(show=0, vmx=self.a, vmy=self.b, vmz=self.c, startx=self.currentPosX, starty=self.currentPosY, startz=self.currentPosZ, p1=self.p)
+                rx, ry, rz = rotaToGazebo3D(rx, ry, rz, self.a, self.b, self.c, self.distNodes)
+                print('DEFINIR ROTA')
+                print('rx -------------------')
+                print(rx)
+                print('ry -------------------')
+                print(ry)
+                self.rotas["x"] = np.array(rx)
+                self.rotas["y"] = np.array(ry)
+                self.rotas["z"] = np.array(rz) # [self.altura] * len(rx)
+                self.rotas["yaw"] = np.array([self.anguloGeral] * len(rx))
+                print(self.rotas["x"])
+                print(self.rotas["y"])
+
+                # plt.plot(self.a, self.b, '.k')
+                
+                # print(self.a)
+                # print(self.b)
+                # print(self.c)
+                # ax = plt.axes(projection = "3d")
+                # ax.plot3D(self.a, self.b, self.c, 'k.') 
+                # ax.plot3D(self.rotas["x"], self.rotas["y"], self.rotas["z"], 'y.') 
+                # ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
+                # ax.set_xlim(0,20) 
+                # ax.set_ylim(0,10) 
+                # ax.set_zlim(0,6) 
+                # plt.pause(0.01)
+                # plt.show()
+                print("rota definida")                              
+                self.unic["definirRota"] = 1
+
+            self.velodyne = 0
+
+
     def callbackBuildMap3D_octomap(self, data):
-        # print('[callbackBuildMap3D_octomap]')
+        print('[callbackBuildMap3D_octomap]')
         if self.velodyne:
             if not self.knownEnvironment: 
                 self.newA, self.newB, self.newC = [], [], []
@@ -345,6 +629,90 @@ class globalPlanner:
                             self.c.append(round_pos_z)
                             self.abc.append(pos_to_add)
 
+                        round_pos_x = round(position.x) + self.currentPosX + 1
+                        round_pos_y = round(position.y) + self.currentPosY
+                        round_pos_z = round(position.z) + self.currentPosZ
+                        pos_to_add = [round_pos_x, round_pos_y, round_pos_z]
+                        if pos_to_add not in self.abc:
+                            # print(pos_to_add)
+                            self.newA.append(round_pos_x)
+                            self.newB.append(round_pos_y)
+                            self.newC.append(round_pos_z)
+                            self.a.append(round_pos_x)
+                            self.b.append(round_pos_y)
+                            self.c.append(round_pos_z)
+                            self.abc.append(pos_to_add)
+
+                        round_pos_x = round(position.x) + self.currentPosX - 1
+                        round_pos_y = round(position.y) + self.currentPosY
+                        round_pos_z = round(position.z) + self.currentPosZ
+                        pos_to_add = [round_pos_x, round_pos_y, round_pos_z]
+                        if pos_to_add not in self.abc:
+                            # print(pos_to_add)
+                            self.newA.append(round_pos_x)
+                            self.newB.append(round_pos_y)
+                            self.newC.append(round_pos_z)
+                            self.a.append(round_pos_x)
+                            self.b.append(round_pos_y)
+                            self.c.append(round_pos_z)
+                            self.abc.append(pos_to_add)
+
+                        round_pos_x = round(position.x) + self.currentPosX
+                        round_pos_y = round(position.y) + self.currentPosY + 1
+                        round_pos_z = round(position.z) + self.currentPosZ
+                        pos_to_add = [round_pos_x, round_pos_y, round_pos_z]
+                        if pos_to_add not in self.abc:
+                            # print(pos_to_add)
+                            self.newA.append(round_pos_x)
+                            self.newB.append(round_pos_y)
+                            self.newC.append(round_pos_z)
+                            self.a.append(round_pos_x)
+                            self.b.append(round_pos_y)
+                            self.c.append(round_pos_z)
+                            self.abc.append(pos_to_add)
+
+                        round_pos_x = round(position.x) + self.currentPosX
+                        round_pos_y = round(position.y) + self.currentPosY - 1
+                        round_pos_z = round(position.z) + self.currentPosZ
+                        pos_to_add = [round_pos_x, round_pos_y, round_pos_z]
+                        if pos_to_add not in self.abc:
+                            # print(pos_to_add)
+                            self.newA.append(round_pos_x)
+                            self.newB.append(round_pos_y)
+                            self.newC.append(round_pos_z)
+                            self.a.append(round_pos_x)
+                            self.b.append(round_pos_y)
+                            self.c.append(round_pos_z)
+                            self.abc.append(pos_to_add)
+
+                        round_pos_x = round(position.x) + self.currentPosX
+                        round_pos_y = round(position.y) + self.currentPosY
+                        round_pos_z = round(position.z) + self.currentPosZ + 1
+                        pos_to_add = [round_pos_x, round_pos_y, round_pos_z]
+                        if pos_to_add not in self.abc:
+                            # print(pos_to_add)
+                            self.newA.append(round_pos_x)
+                            self.newB.append(round_pos_y)
+                            self.newC.append(round_pos_z)
+                            self.a.append(round_pos_x)
+                            self.b.append(round_pos_y)
+                            self.c.append(round_pos_z)
+                            self.abc.append(pos_to_add)
+
+                        round_pos_x = round(position.x) + self.currentPosX
+                        round_pos_y = round(position.y) + self.currentPosY
+                        round_pos_z = round(position.z) + self.currentPosZ - 1
+                        pos_to_add = [round_pos_x, round_pos_y, round_pos_z]
+                        if pos_to_add not in self.abc:
+                            # print(pos_to_add)
+                            self.newA.append(round_pos_x)
+                            self.newB.append(round_pos_y)
+                            self.newC.append(round_pos_z)
+                            self.a.append(round_pos_x)
+                            self.b.append(round_pos_y)
+                            self.c.append(round_pos_z)
+                            self.abc.append(pos_to_add)
+
                 # print(self.newA, self.newB, self.newC)
                 # fig = plt.figure()
                 # ax = fig.add_subplot(111, projection='3d')
@@ -354,6 +722,136 @@ class globalPlanner:
 
                 # plt.pause(0.01)
                 # plt.show()
+
+                # pos_to_add = [round(self.currentPosX) - 2, round(self.currentPosY), round(self.currentPosZ)]
+                # if pos_to_add not in self.abc:
+                #     self.newA.append(round(self.currentPosX) - 2)
+                #     self.newB.append(round(self.currentPosY))
+                #     self.newC.append(round(self.currentPosZ))
+                #     self.abc.append(pos_to_add)
+
+                # pos_to_add = [round(self.currentPosX) - 2, round(self.currentPosY) + 1, round(self.currentPosZ)]
+                # if pos_to_add not in self.abc:
+                #     self.newA.append(round(self.currentPosX) - 2)
+                #     self.newB.append(round(self.currentPosY) + 1)
+                #     self.newC.append(round(self.currentPosZ))
+                #     self.abc.append(pos_to_add)
+
+                # pos_to_add = [round(self.currentPosX) - 2, round(self.currentPosY) - 1, round(self.currentPosZ)]
+                # if pos_to_add not in self.abc:
+                #     self.newA.append(round(self.currentPosX) - 2)
+                #     self.newB.append(round(self.currentPosY) - 1)
+                #     self.newC.append(round(self.currentPosZ))
+                #     self.abc.append(pos_to_add)
+
+                # pos_to_add = [round(self.currentPosX) - 2, round(self.currentPosY), round(self.currentPosZ) + 1]
+                # if pos_to_add not in self.abc:
+                #     self.newA.append(round(self.currentPosX) - 2)
+                #     self.newB.append(round(self.currentPosY))
+                #     self.newC.append(round(self.currentPosZ) + 1)
+                #     self.abc.append(pos_to_add)
+
+                # pos_to_add = [round(self.currentPosX) - 2, round(self.currentPosY) + 1, round(self.currentPosZ) + 1]
+                # if pos_to_add not in self.abc:
+                #     self.newA.append(round(self.currentPosX) - 2)
+                #     self.newB.append(round(self.currentPosY) + 1)
+                #     self.newC.append(round(self.currentPosZ) + 1)
+                #     self.abc.append(pos_to_add)
+
+                # pos_to_add = [round(self.currentPosX) - 2, round(self.currentPosY) - 1, round(self.currentPosZ) + 1]
+                # if pos_to_add not in self.abc:
+                #     self.newA.append(round(self.currentPosX) - 2)
+                #     self.newB.append(round(self.currentPosY) - 1)
+                #     self.newC.append(round(self.currentPosZ) + 1)
+                #     self.abc.append(pos_to_add)
+
+                # pos_to_add = [round(self.currentPosX) - 2, round(self.currentPosY), round(self.currentPosZ) - 1]
+                # if pos_to_add not in self.abc:
+                #     self.newA.append(round(self.currentPosX) - 2)
+                #     self.newB.append(round(self.currentPosY))
+                #     self.newC.append(round(self.currentPosZ) - 1)
+                #     self.abc.append(pos_to_add)
+
+                # pos_to_add = [round(self.currentPosX) - 2, round(self.currentPosY) + 1, round(self.currentPosZ) - 1]
+                # if pos_to_add not in self.abc:
+                #     self.newA.append(round(self.currentPosX) - 2)
+                #     self.newB.append(round(self.currentPosY) + 1)
+                #     self.newC.append(round(self.currentPosZ) - 1)
+                #     self.abc.append(pos_to_add)
+
+                # pos_to_add = [round(self.currentPosX) - 2, round(self.currentPosY) - 1, round(self.currentPosZ) - 1]
+                # if pos_to_add not in self.abc:
+                #     self.newA.append(round(self.currentPosX) - 2)
+                #     self.newB.append(round(self.currentPosY) - 1)
+                #     self.newC.append(round(self.currentPosZ) - 1)
+                #     self.abc.append(pos_to_add)
+
+                
+
+
+                # TODO validate if it is necessary or if octomap do it automatically
+                # If it is not necessary set the first parameter as 0
+                # pl = self.rotationMatrix(0, self.newA, self.newB, self.newC)
+                
+                # self.newA, self.newB, self.newC = [], [], []
+
+                # for i1, i2, i3 in zip(pl[0], pl[1], pl[2]):
+                #     dentroRange = 1
+
+                #     if dentroRange:
+                #         if [round(i1), round(i2), round(i3)] not in self.abc and round(i2)>1:
+                #             self.newA.append(round(i2+3))
+                #             self.newB.append(round(i1+3))
+                #             self.newC.append(round(i3+1))
+                #             self.a.append(round(i2+3))
+                #             self.b.append(round(i1+3))
+                #             self.c.append(round(i3+1))
+                            
+                #             self.abc.append([round(i1), round(i2), round(i3)])
+
+                #         value = np.sqrt((self.currentPosX - self.a[-1])**2 + (self.currentPosY - self.b[-1])**2 + (self.currentPosZ - self.c[-1])**2)      
+                #         if value < 15:
+                #             if self.countDym == 0:
+                #                 self.newA.append(self.a[-1])
+                #                 self.newB.append(self.b[-1])
+                #                 self.newC.append(self.c[-1])
+                #             elif self.countDym == 1:
+                #                 self.newA1.append(self.a[-1])
+                #                 self.newB1.append(self.b[-1])
+                #                 self.newC1.append(self.c[-1])
+                #             else:
+                #                 self.newA2.append(self.a[-1])
+                #                 self.newB2.append(self.b[-1])
+                #                 self.newC2.append(self.c[-1])
+
+                #         if self.countDym == 0:
+                #             pl = rotationMatrix3D(self.currentPosYaw, self.newA, self.newB, self.newC, "yaw")
+                #             self.newA = pl[0].tolist() 
+                #             self.newB = pl[1].tolist() 
+                #             self.newC = pl[2].tolist()
+                #         elif self.countDym == 1:
+                #             pl = rotationMatrix3D(self.currentPosYaw, self.newA1, self.newB1, self.newC1, "yaw")
+                #             self.newA1 = pl[0].tolist() 
+                #             self.newB1 = pl[1].tolist()
+                #             self.newC1 = pl[2].tolist()
+                #         else:
+                #             pl = rotationMatrix3D(self.currentPosYaw, self.newA2, self.newB2, self.newC2, "yaw")
+                #             self.newA2 = pl[0].tolist()
+                #             self.newB2 = pl[1].tolist()
+                #             self.newC2 = pl[2].tolist()
+                #         self.countDym += 1
+
+                #         if self.countDym == 3:
+                #             for i1, i2, i3 in zip(pl[0], pl[1], pl[2]):
+                #                 if [round(i1), round(i2), round(i3)] not in self.abc:
+                #                     self.a.append(round(i1))
+                #                     self.b.append(round(i2))
+                #                     self.c.append(round(i3))
+                #                     self.abc.append([round(i1), round(i2), round(i3)])
+                            
+                #             self.countDym = 0
+                #             self.checkDym = 1
+                #             self.newA, self.newB, self.newC, self.newA1, self.newB1, self.newC1, self.newA2, self.newB2, self.newC2 = [], [], [], [], [], [], [], [], []
             else:
                 self.a = self.p.xobs
                 self.b = self.p.xobs
@@ -383,6 +881,41 @@ class globalPlanner:
                 self.unic["definirRota"] = 1
 
             self.velodyne = 0
+
+
+    def callbackBuildMap(self, obs):
+        buildMapX, buildMapY, buildMapZ = [], [], []
+
+        for value in obs.poses:
+            buildMapX.append(value.position.x)
+            buildMapY.append(value.position.y)
+            buildMapZ.append(value.position.z)
+        
+        if len(buildMapX) > 5: # if self.trocaYaw:
+            for v1, v2, v3 in zip(buildMapX, buildMapY, buildMapZ):
+                self.a.append(v1)
+                self.b.append(v2)
+                self.c.append(v3)
+         
+        print(time() - self.counts["total"])
+        # if round(time() - self.counts["total"])%1==0 and 24 > time() - self.counts["total"] > 15:
+        #     fig = plt.figure()
+        #     ax = fig.add_subplot(111, projection='3d')
+        #     zz = [2] * len(self.xx)
+        #     ax.plot3D(self.xx, self.yy, zz, ".g")
+        #     ax.plot3D([self.currentPosX], [self.currentPosY], [self.currentPosZ], ".r")
+        #     ax.plot3D(self.a, self.b, self.c,".k")
+        #     ax.plot3D(buildMapX, buildMapY, buildMapZ,".y")
+        #     ax.set_title(self.currentPosYaw)
+        #     ax.set_xlabel("x (m)" + str(self.currentPosX))
+        #     ax.set_ylabel("y (m)" + str(self.currentPosY))
+        #     ax.set_zlabel("z (m)" + str(self.currentPosZ))
+        #     ax.set_xlim(-50, 100)
+        #     ax.set_ylim(-50, 100)
+        #     ax.set_zlim(-3, 7)
+        #     ax.view_init(73, -159)
+        #     self.contador += 1
+        #     plt.show()
 
     # ---------------------------- Onde o UAV ta ----------------------------------
     def callbackPosicao(self, odom):
